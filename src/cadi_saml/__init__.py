@@ -79,7 +79,143 @@ from .macros import (
     PIPE_SCHEDULES,
 )
 
+# Enterprise Parametric Kernel Extensions
+from .core.error_model import (
+    CADIErrorPayload,
+    E_DIMENSION_CONFLICT,
+    E_UNDER_CONSTRAINED,
+    E_OVER_CONSTRAINED,
+    E_COLLISION,
+    E_DFM_VIOLATION,
+    E_TOLERANCE_STACKUP,
+    E_STANDARDS_MISMATCH,
+    E_PATCH_CONFLICT,
+)
+from .spec import EngineeringSpecification
+from .features import (
+    Feature,
+    FeatureTree,
+    PadFeature,
+    PocketFeature,
+    HoleFeature,
+    ShellFeature,
+    FilletFeature,
+    ChamferFeature,
+    LinearPatternFeature,
+    CircularPatternFeature,
+    MirrorFeature,
+)
+from .sketch import (
+    SketchSolver,
+    SketchPoint,
+    SketchLine,
+    SketchCircle,
+    SketchArc,
+    CoincidentConstraint,
+    HorizontalConstraint,
+    VerticalConstraint,
+    DistanceConstraint,
+    ParallelConstraint,
+    PerpendicularConstraint,
+    ConcentricConstraint,
+    EqualConstraint,
+    TangentConstraint,
+    AngleConstraint,
+)
+from .assembly_solver import (
+    AssemblyMateSolver,
+    CoincidentMate,
+    ConcentricMate,
+    DistanceMate,
+    AngleMate,
+    ParallelMate,
+    PerpendicularMate,
+    TangentMate,
+    GearMeshMate,
+    BeltChainMate,
+    RackAndPinionMate,
+    ScrewMate,
+    LimitMate,
+)
+from .inspection import (
+    inspect_part_geometry,
+    find_faces,
+    find_holes,
+    measure_parts_distance,
+)
+from .manufacturing import (
+    DFMAuditReport,
+    check_hole_aspect_ratios,
+    check_3d_print_overhangs,
+    check_casting_draft_angles,
+    audit_assembly_dfm,
+)
+from .tolerances import (
+    calculate_iso_fit,
+    ToleranceStack,
+    ToleranceDimension,
+)
+from .gears import (
+    InvoluteGearParameters,
+    create_involute_spur_gear_solid,
+)
+from .calculations import (
+    EngineeringMaterial,
+    MATERIALS,
+    get_material,
+    calculate_shaft_diameter,
+    calculate_keyway_stresses,
+    calculate_bearing_l10h_life,
+    calculate_bolt_preload,
+    calculate_pressure_vessel_wall_thickness,
+)
+from .patching import (
+    PatchProposal,
+    preview_patch,
+)
+from .performance import (
+    ShapeCache,
+    AABB,
+    SpatialIndex,
+)
+from .reverse.step_recognizer import STEPFeatureRecognizer
+
 __all__ = [
+    "EngineeringSpecification",
+    "FeatureTree",
+    "PadFeature",
+    "PocketFeature",
+    "HoleFeature",
+    "ShellFeature",
+    "FilletFeature",
+    "ChamferFeature",
+    "LinearPatternFeature",
+    "CircularPatternFeature",
+    "MirrorFeature",
+    "SketchSolver",
+    "AssemblyMateSolver",
+    "CoincidentMate",
+    "ConcentricMate",
+    "DistanceMate",
+    "GearMeshMate",
+    "BeltChainMate",
+    "ScrewMate",
+    "DFMAuditReport",
+    "audit_assembly_dfm",
+    "calculate_iso_fit",
+    "InvoluteGearParameters",
+    "create_involute_spur_gear_solid",
+    "calculate_shaft_diameter",
+    "calculate_keyway_stresses",
+    "calculate_bearing_l10h_life",
+    "calculate_bolt_preload",
+    "calculate_pressure_vessel_wall_thickness",
+    "PatchProposal",
+    "preview_patch",
+    "ShapeCache",
+    "SpatialIndex",
+    "STEPFeatureRecognizer",
+    "CADIErrorPayload",
     "ToleranceStack",
     "DimensionTolerance",
     "DesignStudy",

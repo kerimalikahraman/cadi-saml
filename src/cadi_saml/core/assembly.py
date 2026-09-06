@@ -3434,3 +3434,143 @@ class Assembly:
         contract = PostBuildContract(self)
         return contract.verify(*args, **kwargs)
 
+    # --- Geometry Query and Introspection API ---
+    def compile_solids(self) -> Dict[str, Any]:
+        """Compiles the assembly IR into OpenCASCADE TopoDS_Shape solids."""
+        from ..backend.occt_backend import OCCTBackend
+        backend = OCCTBackend()
+        return backend.compile(self.to_ir())
+
+    def inspect(self, part_name: str) -> Dict[str, Any]:
+        """Inspects volumetric, bounding, and topological properties of a part."""
+        from ..inspection.query_api import inspect_part_geometry
+        solids = self.compile_solids()
+        shape = solids.get(part_name)
+        return inspect_part_geometry(shape, name=part_name)
+
+    def find_faces(
+        self,
+        part_name: Optional[str] = None,
+        normal: Optional[Tuple[float, float, float]] = None,
+        face_type: Optional[str] = None,
+        tolerance_deg: float = 5.0,
+    ) -> List[Dict[str, Any]]:
+        """Queries faces by normal vector or geometric type."""
+        from ..inspection.query_api import find_faces
+        solids = self.compile_solids()
+        if part_name:
+            shape = solids.get(part_name)
+            return find_faces(shape, normal=normal, face_type=face_type, tolerance_deg=tolerance_deg)
+        results = []
+        for pname, shape in solids.items():
+            faces = find_faces(shape, normal=normal, face_type=face_type, tolerance_deg=tolerance_deg)
+            for f in faces:
+                f["part"] = pname
+                results.append(f)
+        return results
+
+    def find_holes(
+        self,
+        part_name: Optional[str] = None,
+        diameter: Optional[float] = None,
+        tolerance_mm: float = 0.5,
+    ) -> List[Dict[str, Any]]:
+        """Detects cylindrical holes on solid parts."""
+        from ..inspection.query_api import find_holes
+        solids = self.compile_solids()
+        if part_name:
+            shape = solids.get(part_name)
+            return find_holes(shape, diameter=diameter, tolerance_mm=tolerance_mm)
+        results = []
+        for pname, shape in solids.items():
+            holes = find_holes(shape, diameter=diameter, tolerance_mm=tolerance_mm)
+            for h in holes:
+                h["part"] = pname
+                results.append(h)
+        return results
+
+    def measure(self, part_a: str, part_b: str) -> Dict[str, Any]:
+        """Measures distance and spatial clearance between two parts."""
+        from ..inspection.query_api import measure_parts_distance
+        solids = self.compile_solids()
+        shape_a = solids.get(part_a)
+        shape_b = solids.get(part_b)
+        return measure_parts_distance(shape_a, shape_b)
+
+    def closest_distance(self, part_a: str, part_b: str) -> float:
+        """Returns exact euclidean distance between closest surface points of part_a and part_b."""
+        res = self.measure(part_a, part_b)
+        return float(res.get("distance", float("inf")))
+
+    def get_feature_tree(self) -> List[Dict[str, Any]]:
+        """Returns the chronological and parametric feature tree."""
+        if hasattr(self, "_features") and self._features:
+            return self._features.to_tree_dict()
+        return [{"part": p, "parameters": self._parts[p].parameters} for p in self._parts]
+
+    def get_dependencies(self, part_name: str) -> List[str]:
+        """Returns downstream and upstream dependency connections for a part."""
+        deps = []
+        for mate in self._ir.mates:
+            if mate.part_a == part_name:
+                deps.append(mate.part_b)
+            elif mate.part_b == part_name:
+                deps.append(mate.part_a)
+        return sorted(list(set(deps)))
+
+    # --- Patch and Repair Engine ---
+    def preview_patch(self, patch_dict: Dict[str, Any]):
+        """Evaluates an atomic patch proposal and reports diffs and impacts."""
+        from ..patching.patch_engine import preview_patch
+        return preview_patch(self, patch_dict)
+
+    def apply_patch(self, patch_or_dict: Any) -> bool:
+        """Applies patch modifications to the assembly."""
+        if hasattr(patch_or_dict, "apply"):
+            return patch_or_dict.apply()
+        prop = self.preview_patch(patch_or_dict)
+        return prop.apply()
+
+    # --- 3D Assembly Mate and Kinematic Solver API ---
+    def mate_coincident(self, part_a: str, part_b: str, **kwargs) -> Assembly:
+        """Enforces planar or point coincidence between two parts."""
+        from ..assembly_solver.mates import CoincidentMate
+        if not hasattr(self, "_mate_solver") or self._mate_solver is None:
+            from ..assembly_solver.dof_solver import AssemblyMateSolver
+            self._mate_solver = AssemblyMateSolver(self.name)
+        pa = part_a.split(".")[0].split(":")[0]
+        pb = part_b.split(".")[0].split(":")[0]
+        self._mate_solver.add_mate(CoincidentMate(pa, pb, **kwargs))
+        return self
+
+    def mate_concentric(self, part_a: str, part_b: str, **kwargs) -> Assembly:
+        """Enforces coaxial alignment between cylindrical features on two parts."""
+        from ..assembly_solver.mates import ConcentricMate
+        if not hasattr(self, "_mate_solver") or self._mate_solver is None:
+            from ..assembly_solver.dof_solver import AssemblyMateSolver
+            self._mate_solver = AssemblyMateSolver(self.name)
+        pa = part_a.split(".")[0].split(":")[0]
+        pb = part_b.split(".")[0].split(":")[0]
+        self._mate_solver.add_mate(ConcentricMate(pa, pb, **kwargs))
+        return self
+
+    def mate_distance(self, part_a: str, part_b: str, distance: float = 0.0, **kwargs) -> Assembly:
+        """Enforces fixed offset distance between two parts."""
+        from ..assembly_solver.mates import DistanceMate
+        if not hasattr(self, "_mate_solver") or self._mate_solver is None:
+            from ..assembly_solver.dof_solver import AssemblyMateSolver
+            self._mate_solver = AssemblyMateSolver(self.name)
+        pa = part_a.split(".")[0].split(":")[0]
+        pb = part_b.split(".")[0].split(":")[0]
+        self._mate_solver.add_mate(DistanceMate(pa, pb, distance=distance))
+        return self
+
+    def analyze_assembly_dof(self) -> Dict[str, Any]:
+        """Analyzes 3D assembly degrees of freedom and unconstrained mobility."""
+        if hasattr(self, "_mate_solver") and self._mate_solver:
+            for pname in self._parts:
+                self._mate_solver.add_part(pname)
+            return self._mate_solver.analyze_dof()
+        from ..core.assembly_constraints import analyze_assembly_dof
+        return analyze_assembly_dof(self)
+
