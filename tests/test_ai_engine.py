@@ -249,31 +249,31 @@ def test_synthetic_dataset_jsonl_integrity():
     assert sample_count >= 60, f"Expected at least 60 samples, got {sample_count}"
     assert len(categories) >= 8, f"Expected at least 8 engineering archetypes, got {len(categories)}: {categories}"
 def test_dataset_validation_runner_execution():
-    """Verify scripts/validate_gold_dataset.py runner functions on gold and negative samples."""
-    print("\n--- Testing Dataset Execution Runner ---")
+    """Verify scripts/validate_gold_dataset.py runner functions on all 60 gold and 30 negative samples."""
+    print("\n--- Testing Dataset Execution Runner across entire dataset ---")
     scripts_dir = Path(__file__).parent.parent / "scripts"
     sys.path.insert(0, str(scripts_dir))
     from validate_gold_dataset import validate_negative_sample, validate_gold_sample
 
-    # Test negative diagnostic sample runner
+    # 1. Test negative diagnostic samples
     neg_file = Path(__file__).parent.parent / "dataset" / "saml_negative_dataset.jsonl"
     with open(neg_file, "r", encoding="utf-8") as f:
-        first_neg = json.loads(f.readline())
-    ok, msg = validate_negative_sample(first_neg, 1, 1)
-    assert ok is True, f"Negative sample validation failed: {msg}"
+        neg_samples = [json.loads(line) for line in f if line.strip()]
 
-    # Test gold execution subprocess runner on 3 diverse samples
+    assert len(neg_samples) >= 30, f"Expected at least 30 negative samples, found {len(neg_samples)}"
+    for idx, neg_s in enumerate(neg_samples, 1):
+        ok, msg, dur, tel = validate_negative_sample(neg_s, idx, len(neg_samples), timeout=35.0)
+        assert ok is True, f"Negative sample {neg_s.get('id')} failed runner: {msg}"
+
+    # 2. Test all 60 gold execution subprocess samples
     gold_file = Path(__file__).parent.parent / "dataset" / "saml_gold_dataset.jsonl"
     with open(gold_file, "r", encoding="utf-8") as f:
-        samples = [json.loads(line) for line in f]
+        samples = [json.loads(line) for line in f if line.strip()]
 
-    # Test I-Beam (1), Flange (7), Shaft (13)
-    test_indices = [0, 6, 12]
-    for idx in test_indices:
-        s = samples[idx]
-        ok, msg, dur = validate_gold_sample(s, idx + 1, len(samples), timeout=25.0)
+    assert len(samples) >= 60, f"Expected at least 60 gold samples, found {len(samples)}"
+    for idx, s in enumerate(samples, 1):
+        ok, msg, dur, tel = validate_gold_sample(s, idx, len(samples), timeout=35.0)
         assert ok is True, f"Gold sample {s.get('id')} failed runner: {msg}"
-        print(f"  -> Subprocess test for {s.get('id')} PASSED in {dur:.2f}s")
 
 
 if __name__ == "__main__":

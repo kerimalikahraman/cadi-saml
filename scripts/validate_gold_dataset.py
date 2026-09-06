@@ -39,7 +39,25 @@ REPO_ROOT = Path(__file__).parent.parent
 SRC_DIR = REPO_ROOT / "src"
 sys.path.insert(0, str(SRC_DIR))
 
+import jsonschema
 from cadi_saml.standards.catalogs import find_standard_by_source_ref, lookup_catalog
+
+SCHEMA_PATH = REPO_ROOT / "schema" / "saml_dataset_schema.json"
+try:
+    with open(SCHEMA_PATH, "r", encoding="utf-8") as _f:
+        DATASET_SCHEMA = json.load(_f)
+except Exception:
+    DATASET_SCHEMA = None
+
+
+def get_git_commit() -> Optional[str]:
+    try:
+        res = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=str(REPO_ROOT))
+        if res.returncode == 0:
+            return res.stdout.strip()
+    except Exception:
+        pass
+    return None
 
 
 # Introspection trailer injected into each gold sample script to extract runtime state
@@ -132,6 +150,15 @@ def validate_gold_sample(
         "stdout": "",
         "stderr": "",
     }
+
+    # 0. JSON Schema Validation
+    if DATASET_SCHEMA is not None:
+        try:
+            jsonschema.validate(instance=sample, schema=DATASET_SCHEMA)
+        except jsonschema.ValidationError as e:
+            telemetry["contract_result"] = False
+            telemetry["provenance_result"] = False
+            return False, f"JSON Schema validation error: {e.message}", 0.0, telemetry
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
@@ -310,6 +337,13 @@ def validate_negative_sample(
         "stderr": "",
     }
 
+    # 0. JSON Schema Validation
+    if DATASET_SCHEMA is not None:
+        try:
+            jsonschema.validate(instance=sample, schema=DATASET_SCHEMA)
+        except jsonschema.ValidationError as e:
+            return False, f"JSON Schema validation error: {e.message}", 0.0, telemetry
+
     if not exp_err:
         return False, "Missing 'expected_error' in metadata", 0.0, telemetry
 
@@ -374,6 +408,24 @@ def validate_negative_sample(
         )
         if not compatible:
             return False, f"Raised exception '{exc_type}' does not match expected '{expected_exc}'", dur, telemetry
+
+        # Verify expected parameter name is matched in stderr / stdout / code (case-insensitive)
+        exp_param = exp_err.get("parameter", "")
+        param_base = exp_param.split(".")[-1]
+        err_content = f"{res.stderr}\n{res.stdout}\n{code}".lower()
+        param_matched = (
+            exp_param.lower() in err_content
+            or param_base.lower() in err_content
+            or exp_param.replace("_", " ").lower() in err_content
+            or exp_param.replace(".", " ").lower() in err_content
+        )
+        if not param_matched:
+            # Check if suggested fix keywords or message keywords match
+            msg_words = [w for w in exp_err.get("message", "").split() if len(w) > 4]
+            fix_words = [w for w in exp_err.get("suggested_fix", "").split() if len(w) > 4]
+            keyword_matched = any(w in err_content for w in msg_words + fix_words)
+            if not keyword_matched:
+                return False, f"Error output does not mention expected parameter '{exp_param}' or diagnostic keywords", dur, telemetry
 
         return True, "PASSED", dur, telemetry
 
@@ -495,11 +547,22 @@ def write_validation_report(
 
     total_time = sum(r.get("duration", 0.0) for r in gold_records + neg_records)
 
+    is_full_gold = (len(gold_records) >= 60 and gold_failed == 0)
+    is_full_neg = (len(neg_records) >= 30 and neg_failed == 0)
+
+    if is_full_gold and is_full_neg:
+        status = "ALL_PASSED"
+    elif (gold_failed == 0 and neg_failed == 0) and (len(gold_records) > 0 or len(neg_records) > 0):
+        status = "PARTIAL_PASSED"
+    else:
+        status = "FAILED"
+
     report = {
         "summary": {
             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "library_version": "0.6.0",
             "catalog_version": "2026.1",
+            "git_commit": get_git_commit(),
             "total_samples": len(gold_records) + len(neg_records),
             "total_gold": len(gold_records),
             "gold_passed": gold_passed,
@@ -508,7 +571,7 @@ def write_validation_report(
             "negative_passed": neg_passed,
             "negative_failed": neg_failed,
             "total_duration_seconds": round(total_time, 2),
-            "status": "ALL_PASSED" if (gold_failed == 0 and neg_failed == 0) else "FAILED",
+            "status": status,
         },
         "gold_results": gold_records,
         "negative_results": neg_records,

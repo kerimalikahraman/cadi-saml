@@ -240,7 +240,7 @@ def generate_negative_samples(seed: int = 42) -> list[dict]:
             "category": "specification_error_handling",
             "standards": ["B-Rep Non-Penetration Principle"],
             "reasoning": "Solid physical components cannot occupy the same 3D spatial volume.",
-            "code": "from cadi_saml import Assembly\nasm = Assembly('ClashTest')\nasm.add_box('block1', 100, 100, 100, origin=(0,0,0))\nasm.add_box('block2', 100, 100, 100, origin=(0,0,0))\nrep = asm.verify_contract(strict=True)\nassert rep.passed\n",
+            "code": "from cadi_saml import Assembly\nasm = Assembly('ClashTest')\nasm.add_box('block1', 100, 100, 100, origin=(0,0,0))\nasm.add_box('block2', 100, 100, 100, origin=(0,0,0))\nrep = asm.verify_contract(strict=True)\nassert rep.passed, f'Contract clash: {rep.to_dict()}'\n",
         },
         {
             "instruction": "Tam üst üste konulmuş iki flanşı çakışma kontrolünden geçirmeye çalış.",
@@ -251,7 +251,7 @@ def generate_negative_samples(seed: int = 42) -> list[dict]:
             "category": "specification_error_handling",
             "standards": ["B-Rep Non-Penetration Principle"],
             "reasoning": "İki katı parçanın üst üste çakışması üretimde imkansızdır.",
-            "code": "from cadi_saml import Assembly\nasm = Assembly('CakisikFlans')\nasm.add_box('f1', 60, 60, 15, origin=(0,0,0))\nasm.add_box('f2', 60, 60, 15, origin=(0,0,0))\nrep = asm.verify_contract(strict=True)\nassert rep.passed\n",
+            "code": "from cadi_saml import Assembly\nasm = Assembly('CakisikFlans')\nasm.add_box('f1', 60, 60, 15, origin=(0,0,0))\nasm.add_box('f2', 60, 60, 15, origin=(0,0,0))\nrep = asm.verify_contract(strict=True)\nassert rep.passed, f'Contract clash: {rep.to_dict()}'\n",
         },
 
         # 10. Wall thickness exceeds radius in pipe
