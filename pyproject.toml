@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cadi_saml"
+version = "0.6.0"
+description = "CADi SAML: Deterministic, Zero-Coordinate, LLM-Native CAD & Kinematics Engine for Python built on OpenCASCADE"
+authors = [
+    { name = "CADi Team" }
+]
+readme = "LIBRARY.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+keywords = [
+    "cad",
+    "opencascade",
+    "brep",
+    "llm",
+    "ai",
+    "parametric",
+    "assembly",
+    "3d-modeling",
+    "cadpy",
+    "mechanical-engineering",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10",
+    "gmsh>=4.11",
+    "cadquery-ocp>=7.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "build>=1.0.0",
+    "twine>=5.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Omerersen/Project-CAD-"
+Repository = "https://github.com/Omerersen/Project-CAD-"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

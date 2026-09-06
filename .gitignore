@@ -1,0 +1,34 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build and Distribution
+dist/
+build/
+*.egg-info/
+eggs/
+.eggs/
+
+# CAD Artifacts & Temporary Exports
+output/
+scratch/
+*.step
+*.stp
+*.stl
+*.brep
+*.iges
+*.igs
+*.png
+*.webp
+*.log
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.system_generated/

@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CADi SAML Gold & Negative Training Dataset Schema",
+  "description": "Formal JSON schema for fine-tuning LLMs on deterministic mechanical assemblies in CADi SAML v0.6.0.",
+  "type": "object",
+  "required": [
+    "id",
+    "instruction",
+    "output",
+    "output_type",
+    "metadata"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^saml_(gold|neg)_[0-9]{6}$",
+      "description": "Unique deterministic identifier for the training sample."
+    },
+    "instruction": {
+      "type": "string",
+      "minLength": 10,
+      "description": "User design request or specification prompt in natural language."
+    },
+    "input": {
+      "type": "string",
+      "description": "Optional contextual input or initial assembly state."
+    },
+    "output": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Target response: executable CADI-SAML Python code or structured error diagnosis."
+    },
+    "output_type": {
+      "type": "string",
+      "enum": ["executable_code", "error_diagnosis"],
+      "description": "Type of output payload: executable CAD script or structured error diagnosis."
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "category",
+        "spec_completeness",
+        "contract_verified",
+        "provenance_tracked",
+        "source_standards",
+        "execution_status",
+        "reasoning_summary",
+        "input_parameters",
+        "catalog_parameters",
+        "derived_parameters",
+        "generator_meta"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "structural_beam",
+            "mounting_flange",
+            "stepped_shaft",
+            "planetary_gearbox",
+            "disk_cam",
+            "piping_route",
+            "gear_train",
+            "threaded_mount",
+            "sheet_metal",
+            "shaft_coupling",
+            "specification_error_handling"
+          ]
+        },
+        "spec_completeness": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Exact mathematical ratio: count(user-specified parameters) / count(total required dimensional parameters)."
+        },
+        "contract_verified": {
+          "type": "boolean",
+          "description": "Whether the output was executed and passed post-build contract validation."
+        },
+        "provenance_tracked": {
+          "type": "boolean",
+          "description": "Whether all non-prompt parameters are tracked to authoritative DIN/ISO standards or calculated derivations."
+        },
+        "source_standards": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of engineering standard references used in this sample (e.g. ['DIN 1025-1', 'ISO 7005-1'])."
+        },
+        "execution_status": {
+          "type": "string",
+          "enum": ["verified_passed", "expected_error"],
+          "description": "Subprocess execution status."
+        },
+        "reasoning_summary": {
+          "type": "string",
+          "description": "Compact, auditable mechanical engineering rationale explaining dimension derivation and standards selection."
+        },
+        "input_parameters": {
+          "type": "object",
+          "description": "Key-value map of dimensions and constraints explicitly parsed from the user prompt."
+        },
+        "catalog_parameters": {
+          "type": "object",
+          "description": "Key-value map of parameters retrieved from standard catalogs (DIN/ISO)."
+        },
+        "derived_parameters": {
+          "type": "object",
+          "description": "Key-value map of mathematically or kinematically calculated parameters."
+        },
+        "expected_error": {
+          "type": "object",
+          "properties": {
+            "error_type": { "type": "string" },
+            "parameter": { "type": "string" },
+            "message": { "type": "string" },
+            "suggested_fix": { "type": "string" }
+          },
+          "description": "Structured error specification for negative training samples."
+        },
+        "generator_meta": {
+          "type": "object",
+          "required": [
+            "generator_version",
+            "library_version",
+            "catalog_version",
+            "seed",
+            "checksum"
+          ],
+          "properties": {
+            "generator_version": { "type": "string" },
+            "library_version": { "type": "string" },
+            "catalog_version": { "type": "string" },
+            "seed": { "type": "integer" },
+            "checksum": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "output_type": { "const": "executable_code" } }
+      },
+      "then": {
+        "properties": {
+          "metadata": {
+            "properties": {
+              "execution_status": { "enum": ["valid", "verified_passed"] },
+              "contract_verified": { "const": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "output_type": { "const": "error_diagnosis" } }
+      },
+      "then": {
+        "properties": {
+          "metadata": {
+            "required": ["expected_error"],
+            "properties": {
+              "execution_status": { "enum": ["expected_error", "expected_failure"] },
+              "contract_verified": { "const": false }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+

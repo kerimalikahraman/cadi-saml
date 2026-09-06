@@ -1,0 +1,31 @@
+{
+  "summary": {
+    "timestamp": "2026-09-06T16:53:00.506439+00:00",
+    "library_version": "0.6.0",
+    "catalog_version": "2026.1",
+    "total_samples": 1,
+    "total_gold": 1,
+    "gold_passed": 1,
+    "gold_failed": 0,
+    "total_negative": 0,
+    "negative_passed": 0,
+    "negative_failed": 0,
+    "total_duration_seconds": 19.8,
+    "status": "ALL_PASSED"
+  },
+  "gold_results": [
+    {
+      "id": "saml_gold_000024",
+      "category": "planetary_gearbox",
+      "sample_type": "gold",
+      "exit_code": 0,
+      "exception_type": null,
+      "contract_result": true,
+      "provenance_result": true,
+      "duration": 19.795,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "negative_results": []
+}
