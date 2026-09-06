@@ -6,9 +6,11 @@ Provides atomic preview and application of parameter diffs for interactive agent
 from cadi_saml.patching.patch_engine import (
     PatchProposal,
     preview_patch,
+    apply_patch,
 )
 
 __all__ = [
     "PatchProposal",
     "preview_patch",
+    "apply_patch",
 ]

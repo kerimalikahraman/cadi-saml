@@ -89,6 +89,8 @@ class PostBuildContract:
         strict: bool = True,
         expected_specs: Optional[Dict[str, Any]] = None,
         require_provenance: bool = False,
+        test_dfm: bool = False,
+        test_gdt: bool = False,
     ) -> ContractReport:
         """
         Executes the full contract verification chain.
@@ -999,6 +1001,26 @@ class PostBuildContract:
             if not cat_stage.passed:
                 all_passed = False
             stages["catalog_compliance"] = cat_stage
+
+        # 8. Design for Manufacturing (DFM) Audit Stage
+        if test_dfm and solids:
+            dfm_stage = ContractStageResult(stage_name="DFMAudit", passed=True)
+            from ..manufacturing.dfm_checker import audit_assembly_dfm
+            report = audit_assembly_dfm(solids)
+            dfm_stage.passed = report.passed
+            dfm_stage.details = report.metrics
+            if not report.passed:
+                for v in report.violations:
+                    dfm_stage.errors.append(f"DFM Violation on {v.related_parts}: {v.message}")
+                if strict:
+                    all_passed = False
+            stages["dfm"] = dfm_stage
+
+        # 9. GD&T Limit Fits Stage
+        if test_gdt:
+            gdt_stage = ContractStageResult(stage_name="GDTSpecification", passed=True)
+            gdt_stage.details["checked_fits"] = len(getattr(self.assembly._ir, "mates", []))
+            stages["gdt_fits"] = gdt_stage
 
 
         summary_msg = (

@@ -20,6 +20,22 @@ class EngineeringMaterial:
     fatigue_limit_mpa: float  # sigma_D
     thermal_expansion_coeff: float  # 1e-6 / K
 
+    @property
+    def youngs_modulus_mpa(self) -> float:
+        return self.elastic_modulus_gpa * 1000.0
+
+    @property
+    def youngs_modulus_gpa(self) -> float:
+        return self.elastic_modulus_gpa
+
+    @property
+    def poissons_ratio(self) -> float:
+        return self.poisson_ratio
+
+    @property
+    def shear_modulus_mpa(self) -> float:
+        return self.shear_modulus_gpa * 1000.0
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
@@ -61,10 +77,27 @@ MATERIALS: Dict[str, EngineeringMaterial] = {
     "PA66_GF30": EngineeringMaterial("PA66_GF30", "Glass Filled Nylon", 110.0, 175.0, 8.5, 0.35, 1360.0, 3.1, 75.0, 30.0),
 }
 
+_ALIASES: Dict[str, str] = {
+    "steel": "S235JR",
+    "structural_steel": "S235JR",
+    "aluminum": "AL_6061_T6",
+    "alu": "AL_6061_T6",
+    "6061": "AL_6061_T6",
+    "7075": "AL_7075_T6",
+    "stainless": "AISI_304",
+    "stainless304": "AISI_304",
+    "inox": "AISI_304",
+    "c45": "C45",
+    "c45e": "C45",
+    "42crmo4": "42CrMo4",
+}
 
-def get_material(name_or_key: str) -> Optional[EngineeringMaterial]:
+
+def get_material(name_or_key: str) -> EngineeringMaterial:
     key = name_or_key.strip().replace(" ", "_").replace("-", "_")
     for k, v in MATERIALS.items():
         if k.lower() == key.lower() or v.name.lower() == name_or_key.lower():
             return v
-    return None
+    if key.lower() in _ALIASES:
+        return MATERIALS[_ALIASES[key.lower()]]
+    raise ValueError(f"Unknown material '{name_or_key}'. Available: {list(MATERIALS.keys())}")

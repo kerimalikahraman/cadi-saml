@@ -172,6 +172,7 @@ from .calculations import (
 from .patching import (
     PatchProposal,
     preview_patch,
+    apply_patch,
 )
 from .performance import (
     ShapeCache,
@@ -212,6 +213,7 @@ __all__ = [
     "calculate_pressure_vessel_wall_thickness",
     "PatchProposal",
     "preview_patch",
+    "apply_patch",
     "ShapeCache",
     "SpatialIndex",
     "STEPFeatureRecognizer",

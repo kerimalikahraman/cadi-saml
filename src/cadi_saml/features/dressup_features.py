@@ -23,10 +23,10 @@ class FilletFeature(Feature):
 
     def __init__(
         self,
-        parent: Feature,
+        name: Optional[str] = None,
+        parent: Optional[Feature] = None,
         radius: float = 1.0,
         edge_filter: Optional[str] = "all",
-        name: Optional[str] = None,
         **kwargs,
     ):
         inputs = {
@@ -74,9 +74,9 @@ class ChamferFeature(Feature):
 
     def __init__(
         self,
-        parent: Feature,
-        distance: float = 1.0,
         name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        distance: float = 1.0,
         **kwargs,
     ):
         inputs = {"distance": float(distance), **kwargs}

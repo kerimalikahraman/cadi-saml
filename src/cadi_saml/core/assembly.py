@@ -385,11 +385,21 @@ class PartReference:
             diameter=float(diameter),
         )
         self._node.add_port(port)
+        if hasattr(self._assembly, "_features") and self._assembly._features is not None:
+            from ..features.solid_features import HoleFeature
+            self._assembly._features.add_feature(
+                HoleFeature(name=f"{self.name}_{name}", diameter=float(diameter), depth=float(depth), position=position, face=face)
+            )
         return self
 
     def add_fillet(self, radius: float, edges: str = "all_top") -> PartReference:
         """Round edges with specified radius ('all_top', 'all_bottom', 'vertical', 'all', etc.)."""
         self._node.add_fillet(FilletNode(radius=float(radius), edge_selector=edges))
+        if hasattr(self._assembly, "_features") and self._assembly._features is not None:
+            from ..features.dressup_features import FilletFeature
+            self._assembly._features.add_feature(
+                FilletFeature(name=f"{self.name}_fillet_{len(self._assembly._features.features)}", radius=float(radius), edge_selector=edges)
+            )
         return self
 
     def fillet(self, radius: float, edges: str = "all_top") -> PartReference:
@@ -399,6 +409,11 @@ class PartReference:
     def add_chamfer(self, distance: float, edges: str = "all_top") -> PartReference:
         """Chamfer/bevel edges with specified distance ('all_top', 'all_bottom', 'vertical', 'all', etc.)."""
         self._node.add_chamfer(ChamferNode(distance=float(distance), edge_selector=edges))
+        if hasattr(self._assembly, "_features") and self._assembly._features is not None:
+            from ..features.dressup_features import ChamferFeature
+            self._assembly._features.add_feature(
+                ChamferFeature(name=f"{self.name}_chamfer_{len(self._assembly._features.features)}", distance=float(distance), edge_selector=edges)
+            )
         return self
 
     def chamfer(self, distance: float, edges: str = "all_top") -> PartReference:
@@ -408,6 +423,12 @@ class PartReference:
     def shell(self, thickness: float = 2.0, open_face: Optional[str] = "bottom") -> PartReference:
         """Hollow out the solid body leaving specified wall thickness."""
         self._node.set_shell(ShellNode(thickness=float(thickness), open_face=open_face))
+        if hasattr(self._assembly, "_features") and self._assembly._features is not None:
+            from ..features.solid_features import ShellFeature
+            self._assembly._features.add_feature(
+                ShellFeature(name=f"{self.name}_shell_{len(self._assembly._features.features)}", thickness=float(thickness), open_face=open_face)
+            )
+        return self
     def add_counterbore(self, cbore_dia: float, cbore_depth: float, hole_dia: float, origin: tuple = (0.0, 0.0, 0.0)) -> PartReference:
         """Cuts a socket head cap screw counterbore pocket into this part."""
         from .features import apply_counterbore
@@ -549,6 +570,9 @@ class Assembly:
         self._mechanism = None
         self._checkpoints: Dict[str, Any] = {}
         self._revision_log: List[Dict[str, Any]] = []
+        from ..features.feature_tree import FeatureTree
+        self._features = FeatureTree(name=name)
+        self._mate_solver = None
 
     def __enter__(self) -> Assembly:
         return self
@@ -602,6 +626,17 @@ class Assembly:
 
 
 
+    def _register_primitive_feature(self, name: str, shape: str, parameters: Dict[str, Any]) -> None:
+        if hasattr(self, "_features") and self._features is not None:
+            from ..features.solid_features import PadFeature
+            l = float(parameters.get("length", parameters.get("radius", 5.0) * 2.0))
+            w = float(parameters.get("width", parameters.get("radius", 5.0) * 2.0))
+            h = float(parameters.get("height", 10.0))
+            orig = parameters.get("origin", (0.0, 0.0, 0.0))
+            self._features.add_feature(
+                PadFeature(name=name, length=l, width=w, height=h, origin=orig, parameters=copy.deepcopy(parameters))
+            )
+
     def add_box(
         self,
         name: str,
@@ -623,6 +658,7 @@ class Assembly:
         self._ir.add_part(part_node)
         ref = PartReference(part_node, self)
         self._parts[name] = ref
+        self._register_primitive_feature(name, "box", part_node.parameters)
         return ref
 
     def add_cylinder(
@@ -665,6 +701,7 @@ class Assembly:
         self._ir.add_part(part_node)
         ref = PartReference(part_node, self)
         self._parts[name] = ref
+        self._register_primitive_feature(name, "cylinder", part_node.parameters)
         return ref
 
 
@@ -1869,13 +1906,24 @@ class Assembly:
 
     def preview_patch(self, diff: Dict[str, Any]):
         """Build an isolated, conflict-detecting patch proposal without mutating this assembly."""
-        from .llm_interface import PatchProposal
-        return PatchProposal(self, diff)
+        from ..patching.patch_engine import preview_patch
+        return preview_patch(self, diff)
+
+    def apply_patch(self, patch_or_dict: Any) -> bool:
+        """Applies patch modifications to the assembly."""
+        from ..patching.patch_engine import apply_patch
+        return apply_patch(self, patch_or_dict)
 
     def _replace_ir(self, ir: AssemblyIR) -> None:
         self._ir = copy.deepcopy(ir)
         self._metadata = self._ir.metadata
         self._parts = {name: PartReference(node, self) for name, node in self._ir.parts.items()}
+        from ..features.feature_tree import FeatureTree
+        from ..features.solid_features import PadFeature
+        self._features = FeatureTree(name=self.name)
+        for pname, pnode in self._ir.parts.items():
+            depth = float(pnode.parameters.get("height", pnode.parameters.get("length", 10.0)))
+            self._features.add_feature(PadFeature(name=pname, depth=depth, parameters=copy.deepcopy(pnode.parameters)))
 
     def _record_revision(self, operation: str, payload: Dict[str, Any]) -> None:
         self._revision_log.append({"revision": len(self._revision_log) + 1, "operation": operation,
@@ -3183,7 +3231,10 @@ class Assembly:
 
     def inspect(self, target: Optional[str] = None, detail: str = "summary",
                 include: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Return compact, JSON-safe model context for an LLM decision."""
+        """Return compact, JSON-safe model context or geometry properties for a part."""
+        if include is None and target is not None and target in self._parts:
+            return self.inspect_geometry(target)
+
         if detail not in ("summary", "full"):
             raise ValueError("detail must be 'summary' or 'full'")
         include_set = set(include or ("parameters", "ports", "constraints", "issues"))
@@ -3441,12 +3492,14 @@ class Assembly:
         backend = OCCTBackend()
         return backend.compile(self.to_ir())
 
-    def inspect(self, part_name: str) -> Dict[str, Any]:
+    def inspect_geometry(self, part_name: str) -> Dict[str, Any]:
         """Inspects volumetric, bounding, and topological properties of a part."""
         from ..inspection.query_api import inspect_part_geometry
         solids = self.compile_solids()
         shape = solids.get(part_name)
         return inspect_part_geometry(shape, name=part_name)
+
+    inspect_part = inspect_geometry
 
     def find_faces(
         self,
@@ -3504,9 +3557,15 @@ class Assembly:
 
     def get_feature_tree(self) -> List[Dict[str, Any]]:
         """Returns the chronological and parametric feature tree."""
-        if hasattr(self, "_features") and self._features:
+        if hasattr(self, "_features") and self._features and self._features.features:
             return self._features.to_tree_dict()
-        return [{"part": p, "parameters": self._parts[p].parameters} for p in self._parts]
+        from ..features.feature_tree import FeatureTree
+        from ..features.solid_features import PadFeature
+        tree = FeatureTree(name=self.name)
+        for pname, pref in self._parts.items():
+            depth = float(pref.parameters.get("height", pref.parameters.get("length", 10.0)))
+            tree.add_feature(PadFeature(name=pname, depth=depth, parameters=copy.deepcopy(pref.parameters)))
+        return tree.to_tree_dict()
 
     def get_dependencies(self, part_name: str) -> List[str]:
         """Returns downstream and upstream dependency connections for a part."""
@@ -3518,19 +3577,6 @@ class Assembly:
                 deps.append(mate.part_a)
         return sorted(list(set(deps)))
 
-    # --- Patch and Repair Engine ---
-    def preview_patch(self, patch_dict: Dict[str, Any]):
-        """Evaluates an atomic patch proposal and reports diffs and impacts."""
-        from ..patching.patch_engine import preview_patch
-        return preview_patch(self, patch_dict)
-
-    def apply_patch(self, patch_or_dict: Any) -> bool:
-        """Applies patch modifications to the assembly."""
-        if hasattr(patch_or_dict, "apply"):
-            return patch_or_dict.apply()
-        prop = self.preview_patch(patch_or_dict)
-        return prop.apply()
-
     # --- 3D Assembly Mate and Kinematic Solver API ---
     def mate_coincident(self, part_a: str, part_b: str, **kwargs) -> Assembly:
         """Enforces planar or point coincidence between two parts."""
@@ -3541,6 +3587,10 @@ class Assembly:
         pa = part_a.split(".")[0].split(":")[0]
         pb = part_b.split(".")[0].split(":")[0]
         self._mate_solver.add_mate(CoincidentMate(pa, pb, **kwargs))
+        f_sel = kwargs.get("first_selector") or (part_a.split(":", 1)[1] if ":" in part_a else None)
+        s_sel = kwargs.get("second_selector") or (part_b.split(":", 1)[1] if ":" in part_b else None)
+        if f_sel and s_sel:
+            self._ir.add_mate(MateNode(mate_type=MateType.COINCIDENT, part_a=pa, part_b=pb, first_selector=f_sel, second_selector=s_sel))
         return self
 
     def mate_concentric(self, part_a: str, part_b: str, **kwargs) -> Assembly:
@@ -3552,6 +3602,10 @@ class Assembly:
         pa = part_a.split(".")[0].split(":")[0]
         pb = part_b.split(".")[0].split(":")[0]
         self._mate_solver.add_mate(ConcentricMate(pa, pb, **kwargs))
+        f_sel = kwargs.get("first_selector") or (part_a.split(":", 1)[1] if ":" in part_a else None)
+        s_sel = kwargs.get("second_selector") or (part_b.split(":", 1)[1] if ":" in part_b else None)
+        if f_sel and s_sel:
+            self._ir.add_mate(MateNode(mate_type=MateType.CONCENTRIC, part_a=pa, part_b=pb, first_selector=f_sel, second_selector=s_sel))
         return self
 
     def mate_distance(self, part_a: str, part_b: str, distance: float = 0.0, **kwargs) -> Assembly:
@@ -3563,14 +3617,18 @@ class Assembly:
         pa = part_a.split(".")[0].split(":")[0]
         pb = part_b.split(".")[0].split(":")[0]
         self._mate_solver.add_mate(DistanceMate(pa, pb, distance=distance))
+        f_sel = kwargs.get("first_selector") or (part_a.split(":", 1)[1] if ":" in part_a else None)
+        s_sel = kwargs.get("second_selector") or (part_b.split(":", 1)[1] if ":" in part_b else None)
+        if f_sel and s_sel:
+            self._ir.add_mate(MateNode(mate_type=MateType.DISTANCE, part_a=pa, part_b=pb, first_selector=f_sel, second_selector=s_sel, parameters={"offset": distance}))
         return self
 
     def analyze_assembly_dof(self) -> Dict[str, Any]:
         """Analyzes 3D assembly degrees of freedom and unconstrained mobility."""
-        if hasattr(self, "_mate_solver") and self._mate_solver:
-            for pname in self._parts:
-                self._mate_solver.add_part(pname)
-            return self._mate_solver.analyze_dof()
-        from ..core.assembly_constraints import analyze_assembly_dof
-        return analyze_assembly_dof(self)
+        if not hasattr(self, "_mate_solver") or self._mate_solver is None:
+            from ..assembly_solver.dof_solver import AssemblyMateSolver
+            self._mate_solver = AssemblyMateSolver(self.name)
+        for pname in self._parts:
+            self._mate_solver.add_part(pname)
+        return self._mate_solver.analyze_dof()
 

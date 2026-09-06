@@ -153,55 +153,13 @@ def _change_value(ir, key, value):
     target[leaf] = value
 
 
-class PatchProposal:
+from cadi_saml.patching.patch_engine import PatchProposal as CanonicalPatchProposal
+
+
+class PatchProposal(CanonicalPatchProposal):
     """A conflict-detecting patch that cannot mutate its source until commit()."""
     def __init__(self, assembly, diff: Dict[str, Any]):
-        if not isinstance(diff, dict) or not diff:
-            raise ValueError("Patch diff must be a nonempty mapping")
-        self._assembly = assembly
-        self.diff = copy.deepcopy(diff)
-        self._base_fingerprint = _fingerprint(assembly._ir)
-        self._candidate = copy.deepcopy(assembly._ir)
-        self._validated = False
-        self._committed = False
-        self.report = None
-        for key, value in self.diff.items():
-            _change_value(self._candidate, key, copy.deepcopy(value))
-
-    def validate(self):
-        from ..backend.occt_backend import OCCTBackend
-        from ..validation.validation_engineer import ValidationEngineer
-        ir_errors = self._candidate.validate()
-        if ir_errors:
-            self.report = {"valid": False, "issues": [{"code": "IR_INVALID", "message": e} for e in ir_errors]}
-            return self.report
-        try:
-            solids = OCCTBackend().compile(self._candidate)
-            invalid = [name for name, shape in solids.items() if not ValidationEngineer().check_manifold(shape)]
-            if invalid:
-                self.report = {"valid": False, "issues": [{"code": "NON_MANIFOLD", "part": name} for name in invalid]}
-            else:
-                self.report = {"valid": True, "issues": [], "changed_paths": sorted(self.diff), "compiled_parts": sorted(solids)}
-        except Exception as exc:
-            self.report = {"valid": False, "issues": [{"code": "COMPILE_FAILED", "exception": type(exc).__name__, "message": str(exc)}]}
-        self._validated = self.report["valid"]
-        return copy.deepcopy(self.report)
-
-    def commit(self):
-        if self._committed:
-            raise RuntimeError("Patch proposal was already committed")
-        if not self._validated:
-            raise RuntimeError("Call validate() and obtain a valid result before commit()")
-        if _fingerprint(self._assembly._ir) != self._base_fingerprint:
-            raise RuntimeError("Assembly changed after preview; create a new proposal")
-        self._assembly._replace_ir(self._candidate)
-        self._assembly._record_revision("patch_commit", self.diff)
-        self._committed = True
-        return self._assembly
-
-    def to_dict(self):
-        return {"diff": _jsonable(self.diff), "validated": self._validated, "committed": self._committed,
-                "report": copy.deepcopy(self.report)}
+        super().__init__(assembly, diff)
 
 
 def structured_diagnostics(raw):

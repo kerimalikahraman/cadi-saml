@@ -103,15 +103,46 @@ class ToleranceDimension:
 class ToleranceStack:
     """
     Performs 1D Worst-Case and Root-Sum-Square (RSS) statistical tolerance stack-up analysis.
+    Supports both geometric dimension chains and statistical gap budgets.
     """
 
     def __init__(self, name: str = "Stackup"):
         self.name = name
         self.dimensions: List[ToleranceDimension] = []
+        self._named_dimensions: Dict[str, Dict[str, Any]] = {}
 
     def add(self, nominal: float, plus_tol: float, minus_tol: Optional[float] = None, direction: int = 1) -> "ToleranceStack":
         minus = plus_tol if minus_tol is None else minus_tol
         self.dimensions.append(ToleranceDimension(float(nominal), float(plus_tol), float(minus), direction))
+        return self
+
+    def add_dimension_tolerance(
+        self,
+        name: str,
+        nominal: float,
+        lower: float,
+        upper: float,
+        coefficient: float = 1.0,
+    ) -> "ToleranceStack":
+        """Adds a named tolerance for 1D dimension chains with signed deviations."""
+        if not name or not all(math.isfinite(x) for x in (nominal, lower, upper, coefficient)):
+            raise ValueError("Dimension name and finite values required")
+        if lower > 0 or upper < 0 or lower > upper or coefficient == 0:
+            raise ValueError("Deviations must straddle zero; coefficient must be nonzero")
+        if name in self._named_dimensions:
+            raise ValueError(f"Duplicate dimension: {name}")
+
+        self._named_dimensions[name] = {
+            "name": name,
+            "nominal": float(nominal),
+            "lower": float(lower),
+            "upper": float(upper),
+            "coefficient": float(coefficient),
+        }
+        direction = 1 if coefficient > 0 else -1
+        plus_tol = upper if direction > 0 else abs(lower)
+        minus_tol = abs(lower) if direction > 0 else upper
+        self.dimensions.append(ToleranceDimension(float(nominal), float(plus_tol), float(minus_tol), direction))
         return self
 
     def analyze(self) -> Dict[str, Any]:
@@ -146,4 +177,70 @@ class ToleranceStack:
                 "min_gap_3sigma": round(nominal_gap - sigma_3, 4),
                 "max_gap_3sigma": round(nominal_gap + sigma_3, 4),
             },
+        }
+
+    def analyze_stackup(self) -> Dict[str, Any]:
+        """Calculates linear worst-case stackup analysis for named dimension chains."""
+        if not self._named_dimensions:
+            if not self.dimensions:
+                raise ValueError("Empty tolerance stack")
+            for i, d in enumerate(self.dimensions):
+                lower = -d.minus_tol if d.direction > 0 else -d.plus_tol
+                upper = d.plus_tol if d.direction > 0 else d.minus_tol
+                self._named_dimensions[f"dim_{i}"] = {
+                    "name": f"dim_{i}",
+                    "nominal": d.nominal,
+                    "lower": lower,
+                    "upper": upper,
+                    "coefficient": float(d.direction),
+                }
+
+        nominal = minimum = maximum = 0.0
+        contributions = []
+        for d in self._named_dimensions.values():
+            nominal += d["nominal"] * d["coefficient"]
+            ends = [(d["nominal"] + e) * d["coefficient"] for e in (d["lower"], d["upper"])]
+            minimum += min(ends)
+            maximum += max(ends)
+            contributions.append({"name": d["name"], "range_mm": abs(d["coefficient"]) * (d["upper"] - d["lower"])})
+        return {
+            "nominal_mm": nominal,
+            "minimum_mm": minimum,
+            "maximum_mm": maximum,
+            "method": "worst_case_linear",
+            "contributors": sorted(contributions, key=lambda d: d["range_mm"], reverse=True),
+        }
+
+    def recommend_shim(
+        self,
+        target_min: float,
+        target_max: float,
+        available_thicknesses: List[float],
+        shim_tolerance: float = 0.0,
+    ) -> Dict[str, Any]:
+        """Choose a shim that subtracts from the gap and meets the whole worst-case interval."""
+        if (
+            not all(math.isfinite(x) for x in (target_min, target_max, shim_tolerance))
+            or target_min > target_max
+            or shim_tolerance < 0
+        ):
+            raise ValueError("Invalid target interval or shim tolerance")
+        stack = self.analyze_stackup()
+        choices = sorted(set(float(x) for x in available_thicknesses))
+        if any(not math.isfinite(x) or x < shim_tolerance for x in choices):
+            raise ValueError("Invalid shim thickness")
+        candidates = []
+        for thickness in choices:
+            lo = stack["minimum_mm"] - thickness - shim_tolerance
+            hi = stack["maximum_mm"] - thickness + shim_tolerance
+            if lo >= target_min - 1e-12 and hi <= target_max + 1e-12:
+                candidates.append({"thickness_mm": thickness, "minimum_gap_mm": lo, "maximum_gap_mm": hi})
+        return {
+            "feasible": bool(candidates),
+            "recommendation": (
+                min(candidates, key=lambda c: abs((c["minimum_gap_mm"] + c["maximum_gap_mm"]) - (target_min + target_max)))
+                if candidates
+                else None
+            ),
+            "candidates": candidates,
         }

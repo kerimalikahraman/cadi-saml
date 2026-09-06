@@ -269,3 +269,58 @@ def test_engineering_specification_compiler():
     dof = asm.analyze_assembly_dof()
     assert dof["status"] == "under_constrained"
     assert dof["free_dof"] == 2
+
+
+def test_feature_tree_auto_registration():
+    """Verify primitive operations automatically register in FeatureTree."""
+    asm = Assembly("AutoFeatureTest")
+    box = asm.add_box("plate", 100.0, 50.0, 10.0)
+    box.add_hole("center_hole", diameter=12.0, depth=10.0, position=(0.0, 0.0))
+    box.add_fillet(radius=2.0)
+
+    tree = asm.get_feature_tree()
+    assert len(tree) >= 3
+    feature_names = [f["name"] for f in tree]
+    assert "plate" in feature_names
+    assert "plate_center_hole" in feature_names
+
+
+def test_step_recognizer_to_assembly():
+    """Verify B-Rep feature recognition reconstructs an editable parametric Assembly."""
+    from cadi_saml.reverse.step_recognizer import STEPFeatureRecognizer
+    asm = Assembly("OriginalFlange")
+    asm.add_flange("flange1", outer_diameter=120.0, thickness=15.0, bolt_count=4, bolt_pcd=90.0, bolt_diameter=8.0)
+    solids = asm.compile_solids()
+    flange_shape = solids["flange1"]
+
+    recognizer = STEPFeatureRecognizer(shape=flange_shape)
+    recon_asm = recognizer.to_assembly(part_name="recon_flange")
+
+    assert isinstance(recon_asm, Assembly)
+    assert "recon_flange" in recon_asm._parts
+    assert recon_asm._parts["recon_flange"].parameters["outer_diameter"] == 120.0
+    recon_tree = recon_asm.get_feature_tree()
+    assert len(recon_tree) > 0
+
+
+def test_post_build_contract_dfm_and_gdt():
+    """Verify PostBuildContract runs DFM and GD&T fit validation stages."""
+    from cadi_saml.validation.contract import PostBuildContract
+    asm = Assembly("ContractDFMTest")
+    box = asm.add_box("part_a", 40.0, 40.0, 20.0)
+    box.add_hole("h1", diameter=4.0, depth=10.0)
+    asm.add_box("part_b", 40.0, 40.0, 20.0, origin=(50.0, 0.0, 0.0))
+    asm.mate_distance("part_a", "part_b", distance=10.0)
+
+    contract = PostBuildContract(asm)
+    report = contract.verify(
+        test_step_roundtrip=False,
+        check_clash=True,
+        test_dfm=True,
+        test_gdt=True,
+    )
+
+    assert "dfm" in report.stages
+    assert "gdt_fits" in report.stages
+    assert report.stages["dfm"].passed is True
+    assert report.stages["gdt_fits"].passed is True

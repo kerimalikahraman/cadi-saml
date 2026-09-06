@@ -267,12 +267,29 @@ class PartNode:
 class MateNode:
     """A spatial relationship constraint between two parts or their ports/faces."""
     mate_type: MateType
-    first_part: str
-    second_part: str
+    first_part: str = ""
+    second_part: str = ""
     first_selector: Optional[str] = None   # e.g., 'top', 'h1', 'shaft_port'
     second_selector: Optional[str] = None  # e.g., 'bottom', 'hub_port'
     offset: float = 0.0
     angle: float = 0.0
+    part_a: Optional[str] = None
+    part_b: Optional[str] = None
+    parameters: Optional[Dict[str, Any]] = None
+
+    def __post_init__(self):
+        if self.part_a and not self.first_part:
+            self.first_part = self.part_a
+        elif self.first_part and not self.part_a:
+            self.part_a = self.first_part
+
+        if self.part_b and not self.second_part:
+            self.second_part = self.part_b
+        elif self.second_part and not self.part_b:
+            self.part_b = self.second_part
+
+        if self.parameters and "offset" in self.parameters and self.offset == 0.0:
+            self.offset = float(self.parameters["offset"])
 
 
 @dataclass

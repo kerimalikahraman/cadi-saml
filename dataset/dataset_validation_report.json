@@ -1,9 +1,9 @@
 {
   "summary": {
-    "timestamp": "2026-09-06T17:13:25.030701+00:00",
+    "timestamp": "2026-09-06T18:07:02.637509+00:00",
     "library_version": "0.6.0",
     "catalog_version": "2026.1",
-    "git_commit": "f1a052c985e801017a6718d349ad3eb8ada5e477",
+    "git_commit": "802e517caf111e7e42977ac64f609ed0d3843e86",
     "total_samples": 90,
     "total_gold": 60,
     "gold_passed": 60,
@@ -11,7 +11,7 @@
     "total_negative": 30,
     "negative_passed": 30,
     "negative_failed": 0,
-    "total_duration_seconds": 266.62,
+    "total_duration_seconds": 270.33,
     "status": "ALL_PASSED"
   },
   "gold_results": [
@@ -23,8 +23,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.705,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpie5cp_j1.step(974 ents)  Write  Done\n",
+      "duration": 2.905,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp6ol545xv.step(974 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -35,8 +35,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.603,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp1vzbiqf7.step(974 ents)  Write  Done\n",
+      "duration": 2.73,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpeobonqh6.step(974 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -47,8 +47,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.473,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp2sr5hxol.step(974 ents)  Write  Done\n",
+      "duration": 2.691,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp74s2yxzs.step(974 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -59,8 +59,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.518,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpirjihc_e.step(974 ents)  Write  Done\n",
+      "duration": 3.313,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp7bnq9gyi.step(974 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -71,8 +71,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.598,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmph4m9jc_w.step(974 ents)  Write  Done\n",
+      "duration": 2.618,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpp2kgw0i_.step(974 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -83,8 +83,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.73,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp3wffevs7.step(974 ents)  Write  Done\n",
+      "duration": 2.595,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpepd22fyh.step(974 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -95,8 +95,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.665,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp76zbdfnc.step(578 ents)  Write  Done\n",
+      "duration": 2.546,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpo024wdf2.step(578 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -107,8 +107,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.986,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp4lc8z4ap.step(762 ents)  Write  Done\n",
+      "duration": 2.434,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp2rdd7pd7.step(762 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -119,8 +119,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.762,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpeanbhj5v.step(762 ents)  Write  Done\n",
+      "duration": 2.511,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpf_k_tvar.step(762 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -131,8 +131,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 3.028,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp39_dp091.step(946 ents)  Write  Done\n",
+      "duration": 2.577,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpfv0f0fes.step(946 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -143,8 +143,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.739,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmplu393fje.step(946 ents)  Write  Done\n",
+      "duration": 2.685,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp7ual3zu3.step(946 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -155,8 +155,8 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.525,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpt18zjyid.step(578 ents)  Write  Done\n",
+      "duration": 2.445,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpzt0d9kfo.step(578 ents)  Write  Done\n",
       "stderr": ""
     },
     {
@@ -167,7 +167,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.326,
+      "duration": 2.482,
       "stdout": "",
       "stderr": ""
     },
@@ -179,7 +179,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.45,
+      "duration": 2.405,
       "stdout": "",
       "stderr": ""
     },
@@ -191,7 +191,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.31,
+      "duration": 2.402,
       "stdout": "",
       "stderr": ""
     },
@@ -203,7 +203,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.223,
+      "duration": 2.455,
       "stdout": "",
       "stderr": ""
     },
@@ -215,7 +215,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.224,
+      "duration": 2.554,
       "stdout": "",
       "stderr": ""
     },
@@ -227,7 +227,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.198,
+      "duration": 2.615,
       "stdout": "",
       "stderr": ""
     },
@@ -239,7 +239,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 6.762,
+      "duration": 7.239,
       "stdout": "",
       "stderr": ""
     },
@@ -251,7 +251,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 7.974,
+      "duration": 8.253,
       "stdout": "",
       "stderr": ""
     },
@@ -263,7 +263,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 9.932,
+      "duration": 9.649,
       "stdout": "",
       "stderr": ""
     },
@@ -275,7 +275,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 6.15,
+      "duration": 5.884,
       "stdout": "",
       "stderr": ""
     },
@@ -287,7 +287,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 8.128,
+      "duration": 8.343,
       "stdout": "",
       "stderr": ""
     },
@@ -299,7 +299,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 10.546,
+      "duration": 10.936,
       "stdout": "",
       "stderr": ""
     },
@@ -311,7 +311,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.228,
+      "duration": 2.634,
       "stdout": "",
       "stderr": ""
     },
@@ -323,7 +323,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.314,
+      "duration": 2.544,
       "stdout": "",
       "stderr": ""
     },
@@ -335,7 +335,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.214,
+      "duration": 2.69,
       "stdout": "",
       "stderr": ""
     },
@@ -347,7 +347,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.301,
+      "duration": 2.629,
       "stdout": "",
       "stderr": ""
     },
@@ -359,7 +359,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.259,
+      "duration": 2.542,
       "stdout": "",
       "stderr": ""
     },
@@ -371,7 +371,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.371,
+      "duration": 2.672,
       "stdout": "",
       "stderr": ""
     },
@@ -383,7 +383,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.183,
+      "duration": 2.504,
       "stdout": "",
       "stderr": ""
     },
@@ -395,7 +395,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.405,
+      "duration": 3.021,
       "stdout": "",
       "stderr": ""
     },
@@ -407,7 +407,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.36,
+      "duration": 2.965,
       "stdout": "",
       "stderr": ""
     },
@@ -419,7 +419,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.298,
+      "duration": 2.996,
       "stdout": "",
       "stderr": ""
     },
@@ -431,7 +431,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.327,
+      "duration": 2.794,
       "stdout": "",
       "stderr": ""
     },
@@ -443,7 +443,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.325,
+      "duration": 2.658,
       "stdout": "",
       "stderr": ""
     },
@@ -455,7 +455,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 3.024,
+      "duration": 3.485,
       "stdout": "",
       "stderr": ""
     },
@@ -467,7 +467,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.962,
+      "duration": 3.245,
       "stdout": "",
       "stderr": ""
     },
@@ -479,7 +479,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 3.282,
+      "duration": 3.621,
       "stdout": "",
       "stderr": ""
     },
@@ -491,7 +491,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 3.377,
+      "duration": 3.771,
       "stdout": "",
       "stderr": ""
     },
@@ -503,7 +503,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 3.739,
+      "duration": 3.845,
       "stdout": "",
       "stderr": ""
     },
@@ -515,7 +515,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 3.124,
+      "duration": 3.058,
       "stdout": "",
       "stderr": ""
     },
@@ -527,7 +527,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.307,
+      "duration": 2.43,
       "stdout": "",
       "stderr": ""
     },
@@ -539,7 +539,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.217,
+      "duration": 2.455,
       "stdout": "",
       "stderr": ""
     },
@@ -551,7 +551,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.094,
+      "duration": 2.513,
       "stdout": "",
       "stderr": ""
     },
@@ -563,7 +563,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.066,
+      "duration": 2.375,
       "stdout": "",
       "stderr": ""
     },
@@ -575,7 +575,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.248,
+      "duration": 2.425,
       "stdout": "",
       "stderr": ""
     },
@@ -587,7 +587,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.386,
+      "duration": 2.472,
       "stdout": "",
       "stderr": ""
     },
@@ -599,7 +599,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.923,
+      "duration": 2.513,
       "stdout": "",
       "stderr": ""
     },
@@ -611,7 +611,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.675,
+      "duration": 2.428,
       "stdout": "",
       "stderr": ""
     },
@@ -623,7 +623,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.731,
+      "duration": 2.543,
       "stdout": "",
       "stderr": ""
     },
@@ -635,7 +635,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.785,
+      "duration": 2.417,
       "stdout": "",
       "stderr": ""
     },
@@ -647,7 +647,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.552,
+      "duration": 2.44,
       "stdout": "",
       "stderr": ""
     },
@@ -659,7 +659,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.546,
+      "duration": 2.551,
       "stdout": "",
       "stderr": ""
     },
@@ -671,7 +671,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.5,
+      "duration": 2.432,
       "stdout": "",
       "stderr": ""
     },
@@ -683,7 +683,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.576,
+      "duration": 2.408,
       "stdout": "",
       "stderr": ""
     },
@@ -695,7 +695,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.579,
+      "duration": 2.595,
       "stdout": "",
       "stderr": ""
     },
@@ -707,7 +707,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.716,
+      "duration": 2.785,
       "stdout": "",
       "stderr": ""
     },
@@ -719,7 +719,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.624,
+      "duration": 2.709,
       "stdout": "",
       "stderr": ""
     },
@@ -731,7 +731,7 @@
       "exception_type": null,
       "contract_result": true,
       "provenance_result": true,
-      "duration": 2.723,
+      "duration": 2.564,
       "stdout": "",
       "stderr": ""
     }
@@ -746,9 +746,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.71,
+      "duration": 2.396,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpvgvl9gew\\saml_neg_000001.py\", line 3, in <module>\n    asm.add_pipe_route('line', from_port=(0,0,0), to_port=(100,0,0))\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3351, in add_pipe_route\n    return add_pipe_route(self, *args, **kwargs)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\piping_macros.py\", line 223, in add_pipe_route\n    raise CADISpecificationError(\n    ...<4 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Boru dış çapı (outer_dia) pozitif bir sayı olmalıdır veya geçerli bir 'standard' belirtilmelidir. | Parametre: 'outer_dia' | Düzeltme Önerisi: Örn: outer_dia=25.0 veya standard='DN25'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp8k4dpzmo\\saml_neg_000001.py\", line 3, in <module>\n    asm.add_pipe_route('line', from_port=(0,0,0), to_port=(100,0,0))\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3402, in add_pipe_route\n    return add_pipe_route(self, *args, **kwargs)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\piping_macros.py\", line 223, in add_pipe_route\n    raise CADISpecificationError(\n    ...<4 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Boru dış çapı (outer_dia) pozitif bir sayı olmalıdır veya geçerli bir 'standard' belirtilmelidir. | Parametre: 'outer_dia' | Düzeltme Önerisi: Örn: outer_dia=25.0 veya standard='DN25'\n"
     },
     {
       "id": "saml_neg_000002",
@@ -759,9 +759,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.56,
+      "duration": 2.425,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpob9aykng\\saml_neg_000002.py\", line 3, in <module>\n    asm.add_pipe('hat', points=[(0,0,0), (100,0,0)], outer_dia=0.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2214, in add_pipe\n    raise CADISpecificationError(f\"Pipe outer diameter must be positive. Received {od}.\", parameter=\"outer_dia\")\ncadi_saml.core.exceptions.CADISpecificationError: Pipe outer diameter must be positive. Received 0.0. | Parametre: 'outer_dia'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp955mma9x\\saml_neg_000002.py\", line 3, in <module>\n    asm.add_pipe('hat', points=[(0,0,0), (100,0,0)], outer_dia=0.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2262, in add_pipe\n    raise CADISpecificationError(f\"Pipe outer diameter must be positive. Received {od}.\", parameter=\"outer_dia\")\ncadi_saml.core.exceptions.CADISpecificationError: Pipe outer diameter must be positive. Received 0.0. | Parametre: 'outer_dia'\n"
     },
     {
       "id": "saml_neg_000003",
@@ -772,9 +772,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.486,
+      "duration": 2.419,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpci0ltx0k\\saml_neg_000003.py\", line 4, in <module>\n    asm.add_threaded_hole('block', thread='M999', depth=20.0)\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3347, in add_threaded_hole\n    return add_threaded_hole(self, *args, **kwargs)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 96, in add_threaded_hole\n    spec = lookup_metric_thread(thread)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 58, in lookup_metric_thread\n    raise CADISpecificationError(\n    ...<5 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Geçersiz veya bilinmeyen metrik vida standardı: 'M999'. | Parametre: 'thread' | Verilen Değer: 'M999' | Geçerli Seçenekler: ['M3', 'M4', 'M5', 'M6', 'M8', 'M10', 'M12', 'M14', 'M16', 'M20', 'M24'] | Düzeltme Önerisi: Standart ISO 965 kaba diş normlarından birini seçin: M3, M4, M5, M6, M8, M10, M12, M14, M16, M20, M24\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpr4qugrgg\\saml_neg_000003.py\", line 4, in <module>\n    asm.add_threaded_hole('block', thread='M999', depth=20.0)\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3398, in add_threaded_hole\n    return add_threaded_hole(self, *args, **kwargs)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 96, in add_threaded_hole\n    spec = lookup_metric_thread(thread)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 58, in lookup_metric_thread\n    raise CADISpecificationError(\n    ...<5 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Geçersiz veya bilinmeyen metrik vida standardı: 'M999'. | Parametre: 'thread' | Verilen Değer: 'M999' | Geçerli Seçenekler: ['M3', 'M4', 'M5', 'M6', 'M8', 'M10', 'M12', 'M14', 'M16', 'M20', 'M24'] | Düzeltme Önerisi: Standart ISO 965 kaba diş normlarından birini seçin: M3, M4, M5, M6, M8, M10, M12, M14, M16, M20, M24\n"
     },
     {
       "id": "saml_neg_000004",
@@ -785,9 +785,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.618,
+      "duration": 2.344,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpp2xsuybo\\saml_neg_000004.py\", line 4, in <module>\n    asm.add_threaded_hole('govde', thread='M73', depth=15.0)\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3347, in add_threaded_hole\n    return add_threaded_hole(self, *args, **kwargs)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 96, in add_threaded_hole\n    spec = lookup_metric_thread(thread)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 58, in lookup_metric_thread\n    raise CADISpecificationError(\n    ...<5 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Geçersiz veya bilinmeyen metrik vida standardı: 'M73'. | Parametre: 'thread' | Verilen Değer: 'M73' | Geçerli Seçenekler: ['M3', 'M4', 'M5', 'M6', 'M8', 'M10', 'M12', 'M14', 'M16', 'M20', 'M24'] | Düzeltme Önerisi: Standart ISO 965 kaba diş normlarından birini seçin: M3, M4, M5, M6, M8, M10, M12, M14, M16, M20, M24\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp89wigj1m\\saml_neg_000004.py\", line 4, in <module>\n    asm.add_threaded_hole('govde', thread='M73', depth=15.0)\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3398, in add_threaded_hole\n    return add_threaded_hole(self, *args, **kwargs)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 96, in add_threaded_hole\n    spec = lookup_metric_thread(thread)\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\macros\\hole_wizard.py\", line 58, in lookup_metric_thread\n    raise CADISpecificationError(\n    ...<5 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Geçersiz veya bilinmeyen metrik vida standardı: 'M73'. | Parametre: 'thread' | Verilen Değer: 'M73' | Geçerli Seçenekler: ['M3', 'M4', 'M5', 'M6', 'M8', 'M10', 'M12', 'M14', 'M16', 'M20', 'M24'] | Düzeltme Önerisi: Standart ISO 965 kaba diş normlarından birini seçin: M3, M4, M5, M6, M8, M10, M12, M14, M16, M20, M24\n"
     },
     {
       "id": "saml_neg_000005",
@@ -798,9 +798,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.858,
+      "duration": 2.386,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpgf40v9ld\\saml_neg_000005.py\", line 7, in <module>\n    asm.add_planetary_relation('sun', 'carrier', 'ring', ['p1'], z_sun=20, z_ring=55)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2638, in add_planetary_relation\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Kinematically impossible epicyclic gear train: z_ring (55) - z_sun (20) = 35 is not divisible by 2. Planet tooth count (17.5) must be an integer. | Parametre: 'ring_teeth' | Düzeltme Önerisi: Set z_ring = z_sun + 2 * z_planet. For z_sun=20, choose z_ring=56.\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpd8_6vxey\\saml_neg_000005.py\", line 7, in <module>\n    asm.add_planetary_relation('sun', 'carrier', 'ring', ['p1'], z_sun=20, z_ring=55)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2686, in add_planetary_relation\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Kinematically impossible epicyclic gear train: z_ring (55) - z_sun (20) = 35 is not divisible by 2. Planet tooth count (17.5) must be an integer. | Parametre: 'ring_teeth' | Düzeltme Önerisi: Set z_ring = z_sun + 2 * z_planet. For z_sun=20, choose z_ring=56.\n"
     },
     {
       "id": "saml_neg_000006",
@@ -811,9 +811,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.573,
+      "duration": 2.567,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpygji239l\\saml_neg_000006.py\", line 7, in <module>\n    asm.add_planetary_relation('sun', 'carrier', 'ring', ['p1'], z_sun=21, z_ring=50)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2638, in add_planetary_relation\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Kinematically impossible epicyclic gear train: z_ring (50) - z_sun (21) = 29 is not divisible by 2. Planet tooth count (14.5) must be an integer. | Parametre: 'ring_teeth' | Düzeltme Önerisi: Set z_ring = z_sun + 2 * z_planet. For z_sun=21, choose z_ring=51.\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpe8hzxb3x\\saml_neg_000006.py\", line 7, in <module>\n    asm.add_planetary_relation('sun', 'carrier', 'ring', ['p1'], z_sun=21, z_ring=50)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2686, in add_planetary_relation\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Kinematically impossible epicyclic gear train: z_ring (50) - z_sun (21) = 29 is not divisible by 2. Planet tooth count (14.5) must be an integer. | Parametre: 'ring_teeth' | Düzeltme Önerisi: Set z_ring = z_sun + 2 * z_planet. For z_sun=21, choose z_ring=51.\n"
     },
     {
       "id": "saml_neg_000007",
@@ -824,9 +824,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.541,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpdz5q1qdu.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpu6pe2_df\\saml_neg_000007.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.464,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpaallnbg1.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp_fpl_2sq\\saml_neg_000007.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000008",
@@ -837,9 +837,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.823,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp2dyzxlqw.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpkvdexof4\\saml_neg_000008.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.509,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpuhk7vszv.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpfouy85co\\saml_neg_000008.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000009",
@@ -850,9 +850,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 3.048,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpxez9zj4s.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpjlkzeqtb\\saml_neg_000009.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.478,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpr7evv2mi.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpbqza4d2i\\saml_neg_000009.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000010",
@@ -863,9 +863,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.837,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmptzsow2jq.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpvyrdct_o\\saml_neg_000010.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.432,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpx1b3_cp7.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmps5hk_5w3\\saml_neg_000010.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000011",
@@ -876,9 +876,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.799,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp84mmd2zu.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpdc6zd8vg\\saml_neg_000011.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.437,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpaqr5gmnl.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpipeqq6ob\\saml_neg_000011.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000012",
@@ -889,9 +889,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.736,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpbxn23e8f.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpu2h5is3l\\saml_neg_000012.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.529,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpc1ncv05z.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpd6x3ndxl\\saml_neg_000012.py\", line 5, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000013",
@@ -902,9 +902,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.86,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp47f1p4cu.step(118 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpvilu_atg\\saml_neg_000013.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.595,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmppfvxpjaf.step(118 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp6akaob09\\saml_neg_000013.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000014",
@@ -915,9 +915,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.517,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpb2k6u6qf.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpa6y51jsv\\saml_neg_000014.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.491,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp_msw4l31.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpod5mv05u\\saml_neg_000014.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000015",
@@ -928,9 +928,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.611,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp3_zn79r_.step(350 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpnqd_i7vq\\saml_neg_000015.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.534,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp_urialoy.step(350 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp847p88ti\\saml_neg_000015.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000016",
@@ -941,9 +941,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.741,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpwj5prcol.step(118 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmprtphpd10\\saml_neg_000016.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
+      "duration": 2.356,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp7t6jzdh1.step(118 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpzb8tgigj\\saml_neg_000016.py\", line 6, in <module>\n    assert rep.passed\n           ^^^^^^^^^^\nAssertionError\n"
     },
     {
       "id": "saml_neg_000017",
@@ -954,9 +954,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 3.124,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp_5by7mti.step(726 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpf0p5mrg3\\saml_neg_000017.py\", line 6, in <module>\n    assert rep.passed, f'Contract clash: {rep.to_dict()}'\n           ^^^^^^^^^^\nAssertionError: Contract clash: {'assembly_name': 'ClashTest', 'passed': False, 'total_parts_verified': 2, 'total_volume_mm3': 2000000.0, 'summary': 'Post-Build Contract FAILED: 2 parts verified, Total Volume: 2000000.0 mm3. Stages: compilation=True, manifold=True, dimensions=True, interference=False, kinematics=True, step_roundtrip=True.', 'stages': {'compilation': {'passed': True, 'details': {'compiled_parts': ['block1', 'block2']}, 'errors': [], 'warnings': []}, 'manifold': {'passed': True, 'details': {'verified_manifold_count': 2}, 'errors': [], 'warnings': []}, 'dimensions': {'passed': True, 'details': {'assembly_bounding_box': {'dx': 100.0, 'dy': 100.0, 'dz': 100.0, 'bounds': [-50.0, -50.0, -50.0, 50.0, 50.0, 50.0]}, 'total_solids_count': 2, 'part_volumes_mm3': {'block1': 1000000.0, 'block2': 1000000.0}, 'part_bounding_boxes_mm': {'block1': {'dx': 100.0, 'dy': 100.0, 'dz': 100.0, 'bounds': [-50.0, -50.0, -50.0, 50.0, 50.0, 50.0]}, 'block2': {'dx': 100.0, 'dy': 100.0, 'dz': 100.0, 'bounds': [-50.0, -50.0, -50.0, 50.0, 50.0, 50.0]}}, 'total_volume_mm3': 2000000.0, 'assembly_bounding_box_mm': [100.0, 100.0, 100.0]}, 'errors': [], 'warnings': []}, 'interference': {'passed': False, 'details': {'clash_count': 1}, 'errors': [\"Interference detected: 'block1' clashes with 'block2' (1000000.00 mm3).\"], 'warnings': []}, 'kinematics': {'passed': True, 'details': {}, 'errors': [], 'warnings': []}, 'step_roundtrip': {'passed': True, 'details': {'original_volume_mm3': 2000000.0, 'reopened_volume_mm3': 2000000.0, 'volume_delta_ratio': 0.0, 'original_solid_count': 2, 'reopened_solid_count': 2, 'bbox_delta_ratio': 0.0}, 'errors': [], 'warnings': []}}}\n"
+      "duration": 2.505,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp3fpgzg9l.step(726 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpxgtm8lnu\\saml_neg_000017.py\", line 6, in <module>\n    assert rep.passed, f'Contract clash: {rep.to_dict()}'\n           ^^^^^^^^^^\nAssertionError: Contract clash: {'assembly_name': 'ClashTest', 'passed': False, 'total_parts_verified': 2, 'total_volume_mm3': 2000000.0, 'summary': 'Post-Build Contract FAILED: 2 parts verified, Total Volume: 2000000.0 mm3. Stages: compilation=True, manifold=True, dimensions=True, interference=False, kinematics=True, step_roundtrip=True.', 'stages': {'compilation': {'passed': True, 'details': {'compiled_parts': ['block1', 'block2']}, 'errors': [], 'warnings': []}, 'manifold': {'passed': True, 'details': {'verified_manifold_count': 2}, 'errors': [], 'warnings': []}, 'dimensions': {'passed': True, 'details': {'assembly_bounding_box': {'dx': 100.0, 'dy': 100.0, 'dz': 100.0, 'bounds': [-50.0, -50.0, -50.0, 50.0, 50.0, 50.0]}, 'total_solids_count': 2, 'part_volumes_mm3': {'block1': 1000000.0, 'block2': 1000000.0}, 'part_bounding_boxes_mm': {'block1': {'dx': 100.0, 'dy': 100.0, 'dz': 100.0, 'bounds': [-50.0, -50.0, -50.0, 50.0, 50.0, 50.0]}, 'block2': {'dx': 100.0, 'dy': 100.0, 'dz': 100.0, 'bounds': [-50.0, -50.0, -50.0, 50.0, 50.0, 50.0]}}, 'total_volume_mm3': 2000000.0, 'assembly_bounding_box_mm': [100.0, 100.0, 100.0]}, 'errors': [], 'warnings': []}, 'interference': {'passed': False, 'details': {'clash_count': 1}, 'errors': [\"Interference detected: 'block1' clashes with 'block2' (1000000.00 mm3).\"], 'warnings': []}, 'kinematics': {'passed': True, 'details': {}, 'errors': [], 'warnings': []}, 'step_roundtrip': {'passed': True, 'details': {'original_volume_mm3': 2000000.0, 'reopened_volume_mm3': 2000000.0, 'volume_delta_ratio': 0.0, 'original_solid_count': 2, 'reopened_solid_count': 2, 'bbox_delta_ratio': 0.0}, 'errors': [], 'warnings': []}}}\n"
     },
     {
       "id": "saml_neg_000018",
@@ -967,9 +967,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.678,
-      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpzmh9cve6.step(726 ents)  Write  Done\n",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpqnvvpfs2\\saml_neg_000018.py\", line 6, in <module>\n    assert rep.passed, f'Contract clash: {rep.to_dict()}'\n           ^^^^^^^^^^\nAssertionError: Contract clash: {'assembly_name': 'CakisikFlans', 'passed': False, 'total_parts_verified': 2, 'total_volume_mm3': 108000.0, 'summary': 'Post-Build Contract FAILED: 2 parts verified, Total Volume: 108000.0 mm3. Stages: compilation=True, manifold=True, dimensions=True, interference=False, kinematics=True, step_roundtrip=True.', 'stages': {'compilation': {'passed': True, 'details': {'compiled_parts': ['f1', 'f2']}, 'errors': [], 'warnings': []}, 'manifold': {'passed': True, 'details': {'verified_manifold_count': 2}, 'errors': [], 'warnings': []}, 'dimensions': {'passed': True, 'details': {'assembly_bounding_box': {'dx': 60.0, 'dy': 60.0, 'dz': 15.0, 'bounds': [-30.0, -30.0, -7.5, 30.0, 30.0, 7.5]}, 'total_solids_count': 2, 'part_volumes_mm3': {'f1': 54000.0, 'f2': 54000.0}, 'part_bounding_boxes_mm': {'f1': {'dx': 60.0, 'dy': 60.0, 'dz': 15.0, 'bounds': [-30.0, -30.0, -7.5, 30.0, 30.0, 7.5]}, 'f2': {'dx': 60.0, 'dy': 60.0, 'dz': 15.0, 'bounds': [-30.0, -30.0, -7.5, 30.0, 30.0, 7.5]}}, 'total_volume_mm3': 108000.0, 'assembly_bounding_box_mm': [60.0, 60.0, 15.0]}, 'errors': [], 'warnings': []}, 'interference': {'passed': False, 'details': {'clash_count': 1}, 'errors': [\"Interference detected: 'f1' clashes with 'f2' (54000.00 mm3).\"], 'warnings': []}, 'kinematics': {'passed': True, 'details': {}, 'errors': [], 'warnings': []}, 'step_roundtrip': {'passed': True, 'details': {'original_volume_mm3': 108000.0, 'reopened_volume_mm3': 108000.0, 'volume_delta_ratio': 0.0, 'original_solid_count': 2, 'reopened_solid_count': 2, 'bbox_delta_ratio': 0.0}, 'errors': [], 'warnings': []}}}\n"
+      "duration": 2.536,
+      "stdout": "\n*******************************************************************\n******        Statistics on Transfer (Write)                 ******\n\n*******************************************************************\n******        Transfer Mode = 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp9lqu1oqj.step(726 ents)  Write  Done\n",
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmplfcrzki4\\saml_neg_000018.py\", line 6, in <module>\n    assert rep.passed, f'Contract clash: {rep.to_dict()}'\n           ^^^^^^^^^^\nAssertionError: Contract clash: {'assembly_name': 'CakisikFlans', 'passed': False, 'total_parts_verified': 2, 'total_volume_mm3': 108000.0, 'summary': 'Post-Build Contract FAILED: 2 parts verified, Total Volume: 108000.0 mm3. Stages: compilation=True, manifold=True, dimensions=True, interference=False, kinematics=True, step_roundtrip=True.', 'stages': {'compilation': {'passed': True, 'details': {'compiled_parts': ['f1', 'f2']}, 'errors': [], 'warnings': []}, 'manifold': {'passed': True, 'details': {'verified_manifold_count': 2}, 'errors': [], 'warnings': []}, 'dimensions': {'passed': True, 'details': {'assembly_bounding_box': {'dx': 60.0, 'dy': 60.0, 'dz': 15.0, 'bounds': [-30.0, -30.0, -7.5, 30.0, 30.0, 7.5]}, 'total_solids_count': 2, 'part_volumes_mm3': {'f1': 54000.0, 'f2': 54000.0}, 'part_bounding_boxes_mm': {'f1': {'dx': 60.0, 'dy': 60.0, 'dz': 15.0, 'bounds': [-30.0, -30.0, -7.5, 30.0, 30.0, 7.5]}, 'f2': {'dx': 60.0, 'dy': 60.0, 'dz': 15.0, 'bounds': [-30.0, -30.0, -7.5, 30.0, 30.0, 7.5]}}, 'total_volume_mm3': 108000.0, 'assembly_bounding_box_mm': [60.0, 60.0, 15.0]}, 'errors': [], 'warnings': []}, 'interference': {'passed': False, 'details': {'clash_count': 1}, 'errors': [\"Interference detected: 'f1' clashes with 'f2' (54000.00 mm3).\"], 'warnings': []}, 'kinematics': {'passed': True, 'details': {}, 'errors': [], 'warnings': []}, 'step_roundtrip': {'passed': True, 'details': {'original_volume_mm3': 108000.0, 'reopened_volume_mm3': 108000.0, 'volume_delta_ratio': 0.0, 'original_solid_count': 2, 'reopened_solid_count': 2, 'bbox_delta_ratio': 0.0}, 'errors': [], 'warnings': []}}}\n"
     },
     {
       "id": "saml_neg_000019",
@@ -980,9 +980,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.643,
+      "duration": 2.453,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpto_9rm_z\\saml_neg_000019.py\", line 3, in <module>\n    asm.add_pipe('pipe', points=[(0,0,0), (50,0,0)], outer_dia=20.0, wall_thickness=15.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2216, in add_pipe\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Pipe wall thickness (15.0 mm) must be positive and less than radius (10.0 mm). | Parametre: 'wall_thickness' | Düzeltme Önerisi: Specify wall thickness between 0.5 mm and 9.5 mm.\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpru_vei39\\saml_neg_000019.py\", line 3, in <module>\n    asm.add_pipe('pipe', points=[(0,0,0), (50,0,0)], outer_dia=20.0, wall_thickness=15.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2264, in add_pipe\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Pipe wall thickness (15.0 mm) must be positive and less than radius (10.0 mm). | Parametre: 'wall_thickness' | Düzeltme Önerisi: Specify wall thickness between 0.5 mm and 9.5 mm.\n"
     },
     {
       "id": "saml_neg_000020",
@@ -993,9 +993,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.315,
+      "duration": 2.313,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpx0mcvw5z\\saml_neg_000020.py\", line 3, in <module>\n    asm.add_pipe('boru', points=[(0,0,0), (60,0,0)], outer_dia=10.0, wall_thickness=6.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2216, in add_pipe\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Pipe wall thickness (6.0 mm) must be positive and less than radius (5.0 mm). | Parametre: 'wall_thickness' | Düzeltme Önerisi: Specify wall thickness between 0.5 mm and 4.5 mm.\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmprqv6d9o4\\saml_neg_000020.py\", line 3, in <module>\n    asm.add_pipe('boru', points=[(0,0,0), (60,0,0)], outer_dia=10.0, wall_thickness=6.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 2264, in add_pipe\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Pipe wall thickness (6.0 mm) must be positive and less than radius (5.0 mm). | Parametre: 'wall_thickness' | Düzeltme Önerisi: Specify wall thickness between 0.5 mm and 4.5 mm.\n"
     },
     {
       "id": "saml_neg_000021",
@@ -1006,9 +1006,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.347,
+      "duration": 2.39,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpncjjd_xn\\saml_neg_000021.py\", line 3, in <module>\n    asm.add_flange('flange', outer_diameter=120.0, thickness=-10.0, inner_bore=30.0, bolt_pcd=80.0, bolt_count=4, bolt_diameter=9.0)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1546, in add_flange\n    raise CADISpecificationError(f\"Flange thickness must be positive. Received {th}.\", parameter=\"thickness\")\ncadi_saml.core.exceptions.CADISpecificationError: Flange thickness must be positive. Received -10.0. | Parametre: 'thickness'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpypkeawkf\\saml_neg_000021.py\", line 3, in <module>\n    asm.add_flange('flange', outer_diameter=120.0, thickness=-10.0, inner_bore=30.0, bolt_pcd=80.0, bolt_count=4, bolt_diameter=9.0)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1583, in add_flange\n    raise CADISpecificationError(f\"Flange thickness must be positive. Received {th}.\", parameter=\"thickness\")\ncadi_saml.core.exceptions.CADISpecificationError: Flange thickness must be positive. Received -10.0. | Parametre: 'thickness'\n"
     },
     {
       "id": "saml_neg_000022",
@@ -1019,9 +1019,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.469,
+      "duration": 2.43,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp4dakqcxv\\saml_neg_000022.py\", line 3, in <module>\n    asm.add_flange('f', outer_diameter=80.0, thickness=15.0, inner_bore=100.0, bolt_pcd=90.0, bolt_count=4, bolt_diameter=8.0)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1548, in add_flange\n    raise CADISpecificationError(f\"Flange inner bore ({ib} mm) cannot be >= outer diameter ({od} mm).\", parameter=\"inner_bore\")\ncadi_saml.core.exceptions.CADISpecificationError: Flange inner bore (100.0 mm) cannot be >= outer diameter (80.0 mm). | Parametre: 'inner_bore'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp58jdloqo\\saml_neg_000022.py\", line 3, in <module>\n    asm.add_flange('f', outer_diameter=80.0, thickness=15.0, inner_bore=100.0, bolt_pcd=90.0, bolt_count=4, bolt_diameter=8.0)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1585, in add_flange\n    raise CADISpecificationError(f\"Flange inner bore ({ib} mm) cannot be >= outer diameter ({od} mm).\", parameter=\"inner_bore\")\ncadi_saml.core.exceptions.CADISpecificationError: Flange inner bore (100.0 mm) cannot be >= outer diameter (80.0 mm). | Parametre: 'inner_bore'\n"
     },
     {
       "id": "saml_neg_000023",
@@ -1032,9 +1032,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.271,
+      "duration": 2.481,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp5hk_nh_i\\saml_neg_000023.py\", line 4, in <module>\n    s.add_keyway('key', standard='DIN_6885_A', shaft_dia=3.0, length=10.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 428, in add_keyway\n    std_b, std_h, std_t1, _ = lookup_din_6885(shaft_dia)\n                              ~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\standards\\catalogs.py\", line 321, in lookup_din_6885\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: DIN 6885 parallel keyways are defined for shafts >= 6mm. Received diameter: 3.0mm. | Parametre: 'shaft_diameter' | Düzeltme Önerisi: For shafts under 6mm, use set screws, D-cut shafts, or pins instead of parallel keyways.\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpnvem1kk3\\saml_neg_000023.py\", line 4, in <module>\n    s.add_keyway('key', standard='DIN_6885_A', shaft_dia=3.0, length=10.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 449, in add_keyway\n    std_b, std_h, std_t1, _ = lookup_din_6885(shaft_dia)\n                              ~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\standards\\catalogs.py\", line 321, in lookup_din_6885\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: DIN 6885 parallel keyways are defined for shafts >= 6mm. Received diameter: 3.0mm. | Parametre: 'shaft_diameter' | Düzeltme Önerisi: For shafts under 6mm, use set screws, D-cut shafts, or pins instead of parallel keyways.\n"
     },
     {
       "id": "saml_neg_000024",
@@ -1045,9 +1045,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.259,
+      "duration": 2.458,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp9ic4_bcn\\saml_neg_000024.py\", line 4, in <module>\n    s.add_keyway('kama', standard='DIN_6885_A', shaft_dia=4.0, length=10.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 428, in add_keyway\n    std_b, std_h, std_t1, _ = lookup_din_6885(shaft_dia)\n                              ~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\standards\\catalogs.py\", line 321, in lookup_din_6885\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: DIN 6885 parallel keyways are defined for shafts >= 6mm. Received diameter: 4.0mm. | Parametre: 'shaft_diameter' | Düzeltme Önerisi: For shafts under 6mm, use set screws, D-cut shafts, or pins instead of parallel keyways.\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpeau79lnj\\saml_neg_000024.py\", line 4, in <module>\n    s.add_keyway('kama', standard='DIN_6885_A', shaft_dia=4.0, length=10.0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 449, in add_keyway\n    std_b, std_h, std_t1, _ = lookup_din_6885(shaft_dia)\n                              ~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\standards\\catalogs.py\", line 321, in lookup_din_6885\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: DIN 6885 parallel keyways are defined for shafts >= 6mm. Received diameter: 4.0mm. | Parametre: 'shaft_diameter' | Düzeltme Önerisi: For shafts under 6mm, use set screws, D-cut shafts, or pins instead of parallel keyways.\n"
     },
     {
       "id": "saml_neg_000025",
@@ -1058,9 +1058,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.337,
+      "duration": 2.616,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmplnos0uuo\\saml_neg_000025.py\", line 3, in <module>\n    asm.add_sheet_metal_bracket('bracket', bracket_type='L', width=50.0, length1=60.0, length2=40.0, thickness=2.0, inner_radius=-3.0)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1053, in add_sheet_metal_bracket\n    raise CADISpecificationError(f\"Sheet metal inner bend radius must be strictly positive. Received {inner_radius} mm.\", parameter=\"inner_radius\")\ncadi_saml.core.exceptions.CADISpecificationError: Sheet metal inner bend radius must be strictly positive. Received -3.0 mm. | Parametre: 'inner_radius'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpcc4g99bc\\saml_neg_000025.py\", line 3, in <module>\n    asm.add_sheet_metal_bracket('bracket', bracket_type='L', width=50.0, length1=60.0, length2=40.0, thickness=2.0, inner_radius=-3.0)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1090, in add_sheet_metal_bracket\n    raise CADISpecificationError(f\"Sheet metal inner bend radius must be strictly positive. Received {inner_radius} mm.\", parameter=\"inner_radius\")\ncadi_saml.core.exceptions.CADISpecificationError: Sheet metal inner bend radius must be strictly positive. Received -3.0 mm. | Parametre: 'inner_radius'\n"
     },
     {
       "id": "saml_neg_000026",
@@ -1071,9 +1071,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.316,
+      "duration": 2.62,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpg8ay4e5z\\saml_neg_000026.py\", line 3, in <module>\n    asm.add_sheet_metal_bracket('sac', bracket_type='L', width=40.0, length1=50.0, length2=30.0, thickness=1.5, inner_radius=-5.0)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1053, in add_sheet_metal_bracket\n    raise CADISpecificationError(f\"Sheet metal inner bend radius must be strictly positive. Received {inner_radius} mm.\", parameter=\"inner_radius\")\ncadi_saml.core.exceptions.CADISpecificationError: Sheet metal inner bend radius must be strictly positive. Received -5.0 mm. | Parametre: 'inner_radius'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp6mep1hpd\\saml_neg_000026.py\", line 3, in <module>\n    asm.add_sheet_metal_bracket('sac', bracket_type='L', width=40.0, length1=50.0, length2=30.0, thickness=1.5, inner_radius=-5.0)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1090, in add_sheet_metal_bracket\n    raise CADISpecificationError(f\"Sheet metal inner bend radius must be strictly positive. Received {inner_radius} mm.\", parameter=\"inner_radius\")\ncadi_saml.core.exceptions.CADISpecificationError: Sheet metal inner bend radius must be strictly positive. Received -5.0 mm. | Parametre: 'inner_radius'\n"
     },
     {
       "id": "saml_neg_000027",
@@ -1084,9 +1084,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.425,
+      "duration": 2.758,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpxdxhejrk\\saml_neg_000027.py\", line 3, in <module>\n    asm.add_spur_gear('gear', module=0.0, teeth=24, face_width=15.0)\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1935, in add_spur_gear\n    raise CADISpecificationError(f\"Gear module must be strictly positive. Received module={module}.\", parameter=\"module\")\ncadi_saml.core.exceptions.CADISpecificationError: Gear module must be strictly positive. Received module=0.0. | Parametre: 'module'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpcsd585lk\\saml_neg_000027.py\", line 3, in <module>\n    asm.add_spur_gear('gear', module=0.0, teeth=24, face_width=15.0)\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1983, in add_spur_gear\n    raise CADISpecificationError(f\"Gear module must be strictly positive. Received module={module}.\", parameter=\"module\")\ncadi_saml.core.exceptions.CADISpecificationError: Gear module must be strictly positive. Received module=0.0. | Parametre: 'module'\n"
     },
     {
       "id": "saml_neg_000028",
@@ -1097,9 +1097,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.523,
+      "duration": 2.66,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpvw1cqtwc\\saml_neg_000028.py\", line 3, in <module>\n    asm.add_spur_gear('disli', module=2.0, teeth=0, face_width=20.0)\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1937, in add_spur_gear\n    raise CADISpecificationError(f\"Gear teeth must be at least 6. Received teeth={teeth}.\", parameter=\"teeth\")\ncadi_saml.core.exceptions.CADISpecificationError: Gear teeth must be at least 6. Received teeth=0. | Parametre: 'teeth'\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpog3xra1y\\saml_neg_000028.py\", line 3, in <module>\n    asm.add_spur_gear('disli', module=2.0, teeth=0, face_width=20.0)\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 1985, in add_spur_gear\n    raise CADISpecificationError(f\"Gear teeth must be at least 6. Received teeth={teeth}.\", parameter=\"teeth\")\ncadi_saml.core.exceptions.CADISpecificationError: Gear teeth must be at least 6. Received teeth=0. | Parametre: 'teeth'\n"
     },
     {
       "id": "saml_neg_000029",
@@ -1110,9 +1110,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 2.622,
+      "duration": 2.478,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp_37p3yh_\\saml_neg_000029.py\", line 3, in <module>\n    asm.add_rigid_coupling('c', shaft_diameter=20.0, outer_diameter=80.0, length=50.0, bolt_diameter=30.0, bolt_pcd=60.0)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3371, in add_rigid_flange_coupling\n    part_node = CouplingBuilder.rigid_flange(\n        name=name,\n    ...<8 lines>...\n        material=material,\n    )\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\std_parts\\couplings.py\", line 60, in rigid_flange\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Bolt diameter (30.0 mm) is excessively large for flange envelope (OD: 80.0 mm, PCD: 60.0 mm). | Parametre: 'bolt_diameter' | Düzeltme Önerisi: Choose a standard DIN 115 bolt size (e.g. bolt_dia=8.0 mm).\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpqvc20pxl\\saml_neg_000029.py\", line 3, in <module>\n    asm.add_rigid_coupling('c', shaft_diameter=20.0, outer_diameter=80.0, length=50.0, bolt_diameter=30.0, bolt_pcd=60.0)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3422, in add_rigid_flange_coupling\n    part_node = CouplingBuilder.rigid_flange(\n        name=name,\n    ...<8 lines>...\n        material=material,\n    )\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\std_parts\\couplings.py\", line 60, in rigid_flange\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Bolt diameter (30.0 mm) is excessively large for flange envelope (OD: 80.0 mm, PCD: 60.0 mm). | Parametre: 'bolt_diameter' | Düzeltme Önerisi: Choose a standard DIN 115 bolt size (e.g. bolt_dia=8.0 mm).\n"
     },
     {
       "id": "saml_neg_000030",
@@ -1123,9 +1123,9 @@
       "expected_error": "CADISpecificationError",
       "contract_result": "expected_failure",
       "provenance_result": "n/a",
-      "duration": 3.077,
+      "duration": 2.275,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmpb2ut7z15\\saml_neg_000030.py\", line 3, in <module>\n    asm.add_rigid_coupling('c', shaft_diameter=50.0, outer_diameter=40.0, length=60.0)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3371, in add_rigid_flange_coupling\n    part_node = CouplingBuilder.rigid_flange(\n        name=name,\n    ...<8 lines>...\n        material=material,\n    )\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\std_parts\\couplings.py\", line 54, in rigid_flange\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Shaft diameter (50.0 mm) cannot be >= coupling outer diameter (40.0 mm). | Parametre: 'shaft_diameter' | Düzeltme Önerisi: Specify outer diameter at least twice the shaft diameter (e.g. outer_diameter=100.0).\n"
+      "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Kahraman\\AppData\\Local\\Temp\\tmp8ebp0vkl\\saml_neg_000030.py\", line 3, in <module>\n    asm.add_rigid_coupling('c', shaft_diameter=50.0, outer_diameter=40.0, length=60.0)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\core\\assembly.py\", line 3422, in add_rigid_flange_coupling\n    part_node = CouplingBuilder.rigid_flange(\n        name=name,\n    ...<8 lines>...\n        material=material,\n    )\n  File \"C:\\Users\\Kahraman\\Documents\\Cad_Ai\\library\\src\\cadi_saml\\std_parts\\couplings.py\", line 54, in rigid_flange\n    raise CADISpecificationError(\n    ...<3 lines>...\n    )\ncadi_saml.core.exceptions.CADISpecificationError: Shaft diameter (50.0 mm) cannot be >= coupling outer diameter (40.0 mm). | Parametre: 'shaft_diameter' | Düzeltme Önerisi: Specify outer diameter at least twice the shaft diameter (e.g. outer_diameter=100.0).\n"
     }
   ]
 }

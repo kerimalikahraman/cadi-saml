@@ -106,12 +106,12 @@ class STEPFeatureRecognizer:
 
         # 4. Guess Part Type
         part_type = "custom_bracket"
-        if len(shafts) > 0 and max(dx, dy, dz) / min(dx, dy, dz) > 2.5:
+        if len(holes) >= 4 and abs(dx - dy) < 5.0 and dz <= min(dx, dy):
+            part_type = "mounting_flange"
+        elif len(shafts) > 0 and max(dx, dy, dz) / min(dx, dy, dz) > 2.5 and dz > max(dx, dy):
             part_type = "stepped_shaft"
         elif len(planar_faces) >= 6 and min(dx, dy, dz) < 5.0:
             part_type = "sheet_metal_plate"
-        elif len(holes) >= 4 and abs(dx - dy) < 5.0 and dz < min(dx, dy) * 0.5:
-            part_type = "mounting_flange"
 
         # 5. Check Centroid Symmetry
         com_tuple = (round(com.X(), 3), round(com.Y(), 3), round(com.Z(), 3))
@@ -129,3 +129,43 @@ class STEPFeatureRecognizer:
             "detected_holes": holes,
             "detected_shaft_surfaces": shafts,
         }
+
+    def to_assembly(self, part_name: str = "reconstructed_part") -> Any:
+        """
+        Reconstructs an editable, parametric Assembly with a registered FeatureTree
+        from the recognized B-Rep topological features.
+        """
+        from cadi_saml.core.assembly import Assembly
+        rec = self.recognize()
+        ptype = rec.get("predicted_part_type", "custom_bracket")
+        dx, dy, dz = rec.get("envelope_dx_dy_dz", (20.0, 20.0, 20.0))
+        holes = rec.get("detected_holes", [])
+
+        asm = Assembly(f"Reconstructed_{part_name}")
+
+        if ptype == "mounting_flange":
+            od = max(dx, dy)
+            th = dz if dz > 0 else 15.0
+            hole_count = len(holes) if len(holes) > 0 else 4
+            hole_dia = holes[0]["diameter"] if holes else 10.0
+            pcd = round(od * 0.75, 2)
+            asm.add_flange(
+                part_name,
+                outer_diameter=od,
+                thickness=th,
+                bolt_count=hole_count,
+                bolt_pcd=pcd,
+                bolt_diameter=hole_dia,
+            )
+        elif ptype == "stepped_shaft":
+            r = round(min(dx, dy) / 2.0, 2)
+            h = dz if dz > max(dx, dy) else max(dx, dy)
+            asm.add_cylinder(part_name, radius=r, height=h)
+        else:
+            pref = asm.add_box(part_name, length=dx, width=dy, height=dz)
+            for i, h in enumerate(holes):
+                cx, cy, _ = h.get("center", (0.0, 0.0, 0.0))
+                dia = h.get("diameter", 5.0)
+                pref.add_hole(f"rec_hole_{i+1}", diameter=dia, position=(cx, cy), depth=dz)
+
+        return asm

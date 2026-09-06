@@ -126,15 +126,15 @@ class HoleFeature(Feature):
 
     def __init__(
         self,
-        parent: Feature,
-        diameter: float,
-        depth: float,
+        name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        diameter: float = 5.0,
+        depth: float = 10.0,
         origin: Tuple[float, float, float] = (0.0, 0.0, 0.0),
         axis: Tuple[float, float, float] = (0.0, 0.0, 1.0),
         hole_type: str = "simple",
         cbore_dia: Optional[float] = None,
         cbore_depth: Optional[float] = None,
-        name: Optional[str] = None,
         **kwargs,
     ):
         inputs = {
@@ -190,9 +190,9 @@ class ShellFeature(Feature):
 
     def __init__(
         self,
-        parent: Feature,
-        wall_thickness: float = 2.0,
         name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        wall_thickness: float = 2.0,
         **kwargs,
     ):
         inputs = {"wall_thickness": float(wall_thickness), **kwargs}
