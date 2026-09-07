@@ -91,6 +91,9 @@ class PostBuildContract:
         require_provenance: bool = False,
         test_dfm: bool = False,
         test_gdt: bool = False,
+        test_flow: bool = False,
+        flow_max_pressure_drop_bar: Optional[float] = None,
+        flow_max_velocity_m_s: Optional[float] = None,
     ) -> ContractReport:
         """
         Executes the full contract verification chain.
@@ -872,12 +875,14 @@ class PostBuildContract:
                         src = rec.source
                         sref = rec.source_ref
                         conf = rec.confidence
+                        eff_val = getattr(rec, "effective_value", None)
                     elif isinstance(rec, dict):
                         src = rec.get("source")
                         sref = rec.get("source_ref")
                         conf = rec.get("confidence", 1.0)
+                        eff_val = rec.get("effective_value")
                     else:
-                        src, sref, conf = None, None, None
+                        src, sref, conf, eff_val = None, None, None, None
 
                     if src not in valid_sources:
                         prov_stage.passed = False
@@ -906,13 +911,6 @@ class PostBuildContract:
                     # 4. Validate effective_value matches actual parameter value on part
                     if p_k in p_params:
                         act_param_val = p_params[p_k]
-                        eff_val = (
-                            getattr(rec, "effective_value", None)
-                            if hasattr(rec, "effective_value")
-                            else rec.get("effective_value")
-                            if isinstance(rec, dict)
-                            else None
-                        )
                         if eff_val is not None:
                             try:
                                 eff_float = float(eff_val)
@@ -929,7 +927,12 @@ class PostBuildContract:
                                         f"does not match actual part parameter ({act_float})."
                                     )
                             except (ValueError, TypeError):
-                                if str(eff_val) != str(act_param_val):
+                                if strict and p_k in ("length", "width", "height", "radius", "diameter", "depth", "thickness", "pitch", "module", "teeth", "face_width", "outer_diameter", "inner_diameter"):
+                                    prov_stage.passed = False
+                                    prov_stage.errors.append(
+                                        f"Part '{p_name}' parameter '{p_k}' provenance effective_value '{eff_val}' is non-numeric in strict mode."
+                                    )
+                                elif str(eff_val) != str(act_param_val):
                                     prov_stage.passed = False
                                     prov_stage.errors.append(
                                         f"Part '{p_name}' parameter '{p_k}' provenance effective_value ('{eff_val}') "
@@ -957,16 +960,25 @@ class PostBuildContract:
                         from ..standards.catalogs import find_standard_by_source_ref
                         cat_data = find_standard_by_source_ref(sref)
                         if cat_data and p_k in cat_data:
-                            expected_cat_val = float(cat_data[p_k])
                             try:
-                                if abs(float(eff_val) - expected_cat_val) > 0.05:
+                                expected_cat_val = float(cat_data[p_k])
+                                eff_float = float(eff_val)
+                                if abs(eff_float - expected_cat_val) > 0.05:
                                     prov_stage.passed = False
                                     prov_stage.errors.append(
                                         f"Part '{p_name}' parameter '{p_k}' catalog value mismatch: "
                                         f"standard '{sref}' specifies {expected_cat_val}, but provenance effective_value is {eff_val}."
                                     )
-                            except (ValueError, TypeError):
-                                pass
+                            except (ValueError, TypeError) as num_err:
+                                if strict:
+                                    prov_stage.passed = False
+                                    prov_stage.errors.append(
+                                        f"Part '{p_name}' parameter '{p_k}' non-numeric catalog value: {eff_val} ({num_err})"
+                                    )
+                                else:
+                                    prov_stage.warnings.append(
+                                        f"Part '{p_name}' parameter '{p_k}' non-numeric catalog value: {eff_val}"
+                                    )
 
             prov_stage.details["total_parts"] = len(self.assembly._parts)
             if not prov_stage.passed:
@@ -988,15 +1000,24 @@ class PostBuildContract:
                         if cat_data:
                             checked_stds.append(sref)
                             if p_k in cat_data:
-                                exp_val = float(cat_data[p_k])
                                 try:
-                                    if abs(float(eff) - exp_val) > 0.05:
+                                    exp_val = float(cat_data[p_k])
+                                    eff_float = float(eff)
+                                    if abs(eff_float - exp_val) > 0.05:
                                         cat_stage.passed = False
                                         cat_stage.errors.append(
                                             f"Part '{p_name}' param '{p_k}' catalog mismatch: standard '{sref}' specifies {exp_val}, but effective_value is {eff}."
                                         )
-                                except (ValueError, TypeError):
-                                    pass
+                                except (ValueError, TypeError) as num_err:
+                                    if strict:
+                                        cat_stage.passed = False
+                                        cat_stage.errors.append(
+                                            f"Part '{p_name}' param '{p_k}' invalid numeric catalog value: {eff} ({num_err})"
+                                        )
+                                    else:
+                                        cat_stage.warnings.append(
+                                            f"Part '{p_name}' param '{p_k}' non-numeric catalog value: {eff}"
+                                        )
             cat_stage.details["checked_standards"] = list(set(checked_stds))
             if not cat_stage.passed:
                 all_passed = False
@@ -1016,11 +1037,197 @@ class PostBuildContract:
                     all_passed = False
             stages["dfm"] = dfm_stage
 
-        # 9. GD&T Limit Fits Stage
+        # 9. GD&T Limit Fits & Tolerances Stage
         if test_gdt:
             gdt_stage = ContractStageResult(stage_name="GDTSpecification", passed=True)
-            gdt_stage.details["checked_fits"] = len(getattr(self.assembly._ir, "mates", []))
+            from ..tolerances.gdt import calculate_iso_fit, ToleranceStack
+
+            checked_fits: List[Dict[str, Any]] = []
+            checked_stackups: List[Dict[str, Any]] = []
+            geometric_alignments: List[Dict[str, Any]] = []
+
+            # A. Check fits defined in expected_specs or assembly metadata
+            specs_gdt = (expected_specs or {}).get("gdt", {}) if expected_specs else {}
+            meta_obj = getattr(self.assembly._ir, "metadata", None)
+            meta_dict = getattr(meta_obj, "custom_attributes", {}) if hasattr(meta_obj, "custom_attributes") else (meta_obj if isinstance(meta_obj, dict) else {})
+            meta_gdt = meta_dict.get("gdt", {}) if isinstance(meta_dict, dict) else {}
+            fits_to_check = list(specs_gdt.get("fits", []) or meta_gdt.get("fits", []))
+            if not fits_to_check and expected_specs and "fits" in expected_specs:
+                fits_to_check = list(expected_specs["fits"])
+
+            # Also check fits declared on assembly mates
+            for mate in getattr(self.assembly._ir, "mates", []):
+                params = getattr(mate, "parameters", {}) or {}
+                if "fit" in params or ("hole_fit" in params and "shaft_fit" in params):
+                    fits_to_check.append({
+                        "name": f"{getattr(mate, 'first_part', '')}_{getattr(mate, 'second_part', '')}",
+                        "nominal": params.get("nominal_diameter", params.get("nominal", 20.0)),
+                        "hole_fit": params.get("hole_fit", "H7"),
+                        "shaft_fit": params.get("shaft_fit", "g6"),
+                        "expected_type": params.get("fit_type", None),
+                    })
+
+            for fit_req in fits_to_check:
+                nom = float(fit_req.get("nominal", fit_req.get("nominal_diameter_mm", 20.0)))
+                h_fit = str(fit_req.get("hole_fit", "H7"))
+                s_fit = str(fit_req.get("shaft_fit", "g6"))
+                try:
+                    fit_res = calculate_iso_fit(nom, h_fit, s_fit)
+                    checked_fits.append(fit_res)
+                    exp_type = fit_req.get("expected_type")
+                    if exp_type and fit_res["fit_type"].lower() != str(exp_type).lower():
+                        gdt_stage.errors.append(
+                            f"ISO Fit mismatch for nominal {nom}mm ({h_fit}/{s_fit}): expected {exp_type}, got {fit_res['fit_type']}"
+                        )
+                        gdt_stage.passed = False
+                    max_cl = fit_req.get("max_clearance_um")
+                    if max_cl is not None and fit_res["clearance_max_um"] > float(max_cl):
+                        gdt_stage.errors.append(
+                            f"ISO Fit clearance exceeded for nominal {nom}mm: max clearance {fit_res['clearance_max_um']}um > limit {max_cl}um"
+                        )
+                        gdt_stage.passed = False
+                except Exception as ex:
+                    gdt_stage.errors.append(f"Failed to calculate ISO Fit ({nom} {h_fit}/{s_fit}): {ex}")
+                    gdt_stage.passed = False
+
+            # B. Check tolerance stackup analysis
+            stacks_to_check = list(specs_gdt.get("tolerance_stacks", []) or meta_gdt.get("tolerance_stacks", []))
+            if not stacks_to_check and expected_specs and "tolerance_stack" in expected_specs:
+                stacks_to_check = [expected_specs["tolerance_stack"]]
+
+            for s_req in stacks_to_check:
+                if isinstance(s_req, ToleranceStack):
+                    st = s_req
+                elif isinstance(s_req, dict):
+                    st = ToleranceStack(name=s_req.get("name", "ContractStack"))
+                    for dim in s_req.get("dimensions", []):
+                        st.add(
+                            float(dim["nominal"]),
+                            float(dim.get("plus_tol", 0.05)),
+                            float(dim.get("minus_tol", dim.get("plus_tol", 0.05))),
+                            direction=int(dim.get("direction", 1)),
+                        )
+                else:
+                    continue
+
+                try:
+                    s_res = st.analyze()
+                    checked_stackups.append(s_res)
+                    min_req = s_req.get("min_gap") if isinstance(s_req, dict) else None
+                    max_req = s_req.get("max_gap") if isinstance(s_req, dict) else None
+                    if min_req is not None and s_res["worst_case"]["min_gap"] < float(min_req) - 1e-6:
+                        gdt_stage.errors.append(
+                            f"Tolerance stackup '{st.name}' min gap violation: {s_res['worst_case']['min_gap']} < required {min_req}"
+                        )
+                        gdt_stage.passed = False
+                    if max_req is not None and s_res["worst_case"]["max_gap"] > float(max_req) + 1e-6:
+                        gdt_stage.errors.append(
+                            f"Tolerance stackup '{st.name}' max gap violation: {s_res['worst_case']['max_gap']} > required {max_req}"
+                        )
+                        gdt_stage.passed = False
+                except Exception as ex:
+                    gdt_stage.errors.append(f"Tolerance stackup evaluation error: {ex}")
+                    gdt_stage.passed = False
+
+            # C. Check geometric mate alignments
+            for mate in getattr(self.assembly._ir, "mates", []):
+                p1_name = getattr(mate, "first_part", getattr(mate, "part_a", None))
+                p2_name = getattr(mate, "second_part", getattr(mate, "part_b", None))
+                mtype = getattr(mate, "mate_type", None)
+                mtype_val = mtype.value if hasattr(mtype, "value") else str(mtype)
+                alignment_record = {
+                    "part_a": p1_name,
+                    "part_b": p2_name,
+                    "mate_type": mtype_val,
+                    "verified": True,
+                }
+                if solids and p1_name in solids and p2_name in solids:
+                    from ..inspection.query_api import measure_parts_distance
+                    meas = measure_parts_distance(solids[p1_name], solids[p2_name])
+                    dist = meas.get("distance", 0.0)
+                    alignment_record["measured_distance_mm"] = dist
+                    if mtype_val in ("COINCIDENT", "CONCENTRIC", "ATTACH"):
+                        offset = getattr(mate, "offset", 0.0)
+                        if abs(dist - offset) > 0.5:
+                            alignment_record["verified"] = False
+                            msg = f"Mate {mtype_val} between '{p1_name}' and '{p2_name}' has unexpected surface distance {dist:.3f} mm (specified offset: {offset} mm)."
+                            if strict:
+                                gdt_stage.errors.append(msg)
+                                gdt_stage.passed = False
+                            else:
+                                gdt_stage.warnings.append(msg)
+                geometric_alignments.append(alignment_record)
+
+            gdt_stage.details = {
+                "checked_fits": checked_fits,
+                "checked_stackups": checked_stackups,
+                "geometric_alignments": geometric_alignments,
+                "total_mates_audited": len(geometric_alignments),
+            }
+            if not gdt_stage.passed and strict:
+                all_passed = False
             stages["gdt_fits"] = gdt_stage
+
+        # Stage 9: Fluid Dynamics & Flow Simulation Check
+        if test_flow:
+            flow_stage = ContractStageResult(stage_name="flow_simulation", passed=True)
+            audited_pipes = []
+            
+            for p_name, p_ref in self.assembly._parts.items():
+                p_params = getattr(p_ref.node, "parameters", {})
+                flow_data = p_params.get("last_flow_analysis")
+                
+                # If no flow analysis run yet but part has pipe/route parameters and flow specs given
+                if not flow_data and ("cut_length_mm" in p_params or "outer_dia" in p_params):
+                    from ..macros.piping_macros import analyze_pipe_route_flow
+                    # Attempt automated flow analysis if expected specs provided
+                    flow_req = (expected_specs or {}).get("flow", {})
+                    if flow_req or flow_max_pressure_drop_bar is not None:
+                        q_l_s = flow_req.get("flow_rate_l_s", 2.0)
+                        fluid_name = flow_req.get("fluid", "water")
+                        try:
+                            flow_data = analyze_pipe_route_flow(
+                                self.assembly,
+                                pipe_name=p_name,
+                                flow_rate_l_s=q_l_s,
+                                fluid=fluid_name,
+                                max_allowable_dp_bar=flow_max_pressure_drop_bar,
+                            )
+                        except Exception as ex:
+                            flow_stage.warnings.append(f"Auto flow analysis failed for '{p_name}': {ex}")
+
+                if flow_data:
+                    audited_pipes.append(flow_data)
+                    dp_bar = flow_data.get("total_pressure_drop_bar", 0.0)
+                    v_m_s = flow_data.get("velocity_m_s", 0.0)
+
+                    # 1. Pressure drop limit check
+                    max_dp = flow_max_pressure_drop_bar
+                    if max_dp is not None and dp_bar > float(max_dp):
+                        flow_stage.passed = False
+                        rec_msg = ""
+                        sug = flow_data.get("suggested_changes", [])
+                        if sug:
+                            rec_msg = f" (Suggested fix: {sug[0].get('proposed')})"
+                        flow_stage.errors.append(
+                            f"Pipe '{p_name}' pressure drop ({dp_bar:.2f} bar) exceeds maximum allowable limit ({max_dp:.2f} bar){rec_msg}."
+                        )
+
+                    # 2. Maximum velocity limit check
+                    max_v = flow_max_velocity_m_s
+                    if max_v is not None and v_m_s > float(max_v):
+                        flow_stage.warnings.append(
+                            f"Pipe '{p_name}' flow velocity ({v_m_s:.2f} m/s) exceeds recommended limit ({max_v:.2f} m/s)."
+                        )
+
+            flow_stage.details = {
+                "audited_pipes": audited_pipes,
+                "num_pipes_analyzed": len(audited_pipes),
+            }
+            if not flow_stage.passed and strict:
+                all_passed = False
+            stages["flow_simulation"] = flow_stage
+
 
 
         summary_msg = (

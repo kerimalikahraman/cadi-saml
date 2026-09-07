@@ -23,6 +23,9 @@ from .ir.nodes import AssemblyIR, CrossSection, ExportFormat, MateType, PatternT
 from .ir.parser import SAMLParser
 from .backend.occt_backend import OCCTBackend
 from .reverse.step_importer import STEPReverseEngineer
+from .reverse.standalone_generator import reverse_engineer_step_to_code, generate_standalone_python_code
+from .reverse.geometry_matcher import verify_geometric_equivalence
+from .reverse.transaction import ReverseEngineeringTransaction
 from .validation.validation_engineer import ValidationEngineer, ClashReport
 from .validation.contract import PostBuildContract, ContractReport, ContractStageResult
 from .analysis.design import ToleranceStack, DimensionTolerance, DesignStudy
@@ -77,6 +80,29 @@ from .macros import (
     METRIC_THREADS,
     add_pipe_route,
     PIPE_SCHEDULES,
+    analyze_pipe_route_flow,
+)
+from .simulation import (
+    Quantity,
+    AnalysisStudy,
+    AnalysisResult,
+    AcceptanceCriteria,
+)
+from .simulation.flow import (
+    analyze_pipe_flow,
+    analyze_pump_requirements,
+    resolve_fluid,
+)
+from .simulation.structural import (
+    ModalStudy,
+    ModalAnalysisResult,
+    analyze_column_buckling,
+    analyze_fatigue_life,
+    calc_cantilever_beam_natural_frequencies,
+)
+from .simulation.coupling import (
+    calc_pipe_bend_fluid_thrust,
+    couple_flow_to_fea_bracket,
 )
 
 # Enterprise Parametric Kernel Extensions
@@ -99,6 +125,10 @@ from .features import (
     PocketFeature,
     HoleFeature,
     ShellFeature,
+    CylinderFeature,
+    ConeFeature,
+    SphereFeature,
+    BooleanFeature,
     FilletFeature,
     ChamferFeature,
     LinearPatternFeature,
@@ -188,6 +218,10 @@ __all__ = [
     "PocketFeature",
     "HoleFeature",
     "ShellFeature",
+    "CylinderFeature",
+    "ConeFeature",
+    "SphereFeature",
+    "BooleanFeature",
     "FilletFeature",
     "ChamferFeature",
     "LinearPatternFeature",

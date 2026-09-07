@@ -22,6 +22,7 @@ class Feature(ABC):
         parent: Optional["Feature"] = None,
         inputs: Optional[Dict[str, Any]] = None,
         provenance: Optional[Dict[str, Any]] = None,
+        dependencies: Optional[List["Feature"]] = None,
     ):
         self.id: str = str(uuid.uuid4())[:8]
         self.name: str = name or f"{self.__class__.__name__}_{self.id}"
@@ -38,6 +39,11 @@ class Feature(ABC):
 
         if self.parent is not None:
             self.add_dependency(self.parent)
+
+        if dependencies:
+            for dep in dependencies:
+                if dep is not None:
+                    self.add_dependency(dep)
 
     @property
     def is_dirty(self) -> bool:
@@ -121,5 +127,6 @@ class Feature(ABC):
             "inputs": self.inputs,
             "dependencies": [d.name for d in self.dependencies],
             "dirty": self._dirty,
+            "is_synthetic": bool(self.provenance.get("synthetic_tree", self.inputs.get("is_synthetic", False))),
             "provenance": self.provenance,
         }

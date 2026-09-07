@@ -324,3 +324,125 @@ def test_post_build_contract_dfm_and_gdt():
     assert "gdt_fits" in report.stages
     assert report.stages["dfm"].passed is True
     assert report.stages["gdt_fits"].passed is True
+
+
+def test_feature_tree_real_history_and_synthetic_fallback():
+    """Verify get_feature_tree preserves exact feature types and flags synthetic fallback trees."""
+    asm = Assembly("RealHistoryTest")
+    shaft = asm.add_cylinder("drive_shaft", radius=12.0, height=60.0)
+    shaft.add_hole("center_bore", diameter=6.0, depth=30.0)
+    shaft.add_fillet(radius=1.5, edges="all_top")
+
+    tree = asm.get_feature_tree()
+    assert len(tree) == 3
+    # 1. Base solid must be CylinderFeature, NOT a synthesized PadFeature
+    assert tree[0]["type"] == "CylinderFeature"
+    assert tree[0]["name"] == "drive_shaft"
+    assert tree[0]["is_synthetic"] is False
+
+    # 2. Dressup features must maintain parent link
+    assert tree[1]["type"] == "HoleFeature"
+    assert tree[1]["parent"] == "drive_shaft"
+    assert tree[2]["type"] == "FilletFeature"
+    assert tree[2]["parent"] == "drive_shaft"
+
+    # 3. Test fallback tree when _features is absent/cleared
+    asm._features.features.clear()
+    fallback_tree = asm.get_feature_tree()
+    assert len(fallback_tree) == 3
+    assert fallback_tree[0]["type"] == "CylinderFeature"
+    assert fallback_tree[0]["is_synthetic"] is True
+    assert fallback_tree[0]["provenance"].get("synthetic_tree") is True
+    assert fallback_tree[1]["type"] == "HoleFeature"
+    assert fallback_tree[1]["is_synthetic"] is True
+
+
+def test_gdt_contract_real_iso_fits_and_stackup_validation():
+    """Verify PostBuildContract audits actual ISO 286 limit fits and tolerance stackup intervals."""
+    from cadi_saml.validation.contract import PostBuildContract
+    from cadi_saml.tolerances.gdt import ToleranceStack
+
+    asm = Assembly("GDTFitTest")
+    asm.add_cylinder("shaft", radius=15.0, height=40.0)
+    asm.add_box("housing", 60.0, 60.0, 40.0, origin=(80.0, 0.0, 0.0))
+    asm.mate_distance("shaft", "housing", distance=10.0)
+
+    contract = PostBuildContract(asm)
+
+    # 1. Passing ISO fit and tolerance stack
+    passing_specs = {
+        "fits": [
+            {
+                "nominal": 30.0,
+                "hole_fit": "H7",
+                "shaft_fit": "g6",
+                "expected_type": "clearance",
+                "max_clearance_um": 50.0,
+            }
+        ],
+        "tolerance_stack": {
+            "name": "GapCheck",
+            "dimensions": [
+                {"nominal": 50.0, "plus_tol": 0.1, "direction": 1},
+                {"nominal": 48.0, "plus_tol": 0.1, "direction": -1},
+            ],
+            "min_gap": 1.5,
+            "max_gap": 2.5,
+        },
+    }
+    report_pass = contract.verify(
+        test_step_roundtrip=False,
+        check_clash=False,
+        test_gdt=True,
+        expected_specs=passing_specs,
+    )
+    assert report_pass.stages["gdt_fits"].passed is True
+    details = report_pass.stages["gdt_fits"].details
+    assert len(details["checked_fits"]) == 1
+    assert details["checked_fits"][0]["fit_type"] == "clearance"
+
+    # 2. Failing ISO fit (expecting interference on a clearance fit)
+    failing_specs = {
+        "fits": [
+            {
+                "nominal": 30.0,
+                "hole_fit": "H7",
+                "shaft_fit": "g6",
+                "expected_type": "interference",  # Contradiction!
+            }
+        ]
+    }
+    report_fail = contract.verify(
+        test_step_roundtrip=False,
+        check_clash=False,
+        test_gdt=True,
+        expected_specs=failing_specs,
+    )
+    assert report_fail.stages["gdt_fits"].passed is False
+    assert any("ISO Fit mismatch" in err for err in report_fail.stages["gdt_fits"].errors)
+
+
+def test_strict_catalog_compliance_catches_invalid_numbers():
+    """Verify that catalog verification does not silently swallow non-numeric values."""
+    from cadi_saml.validation.contract import PostBuildContract
+
+    asm = Assembly("CatalogStrictTest")
+    bolt = asm.add_box("fastener", 10.0, 10.0, 20.0)
+    # Simulate a corrupted non-numeric catalog provenance
+    bolt.node.spec_provenance["pitch"] = {
+        "source": "catalog",
+        "source_ref": "ISO4762_M6",
+        "effective_value": "MALFORMED_NON_NUMERIC",
+    }
+
+    contract = PostBuildContract(asm)
+    report = contract.verify(
+        test_step_roundtrip=False,
+        check_clash=False,
+        require_provenance=True,
+        strict=True,
+    )
+
+    assert report.stages["catalog_compliance"].passed is False
+    assert any("invalid numeric catalog value" in err or "non-numeric" in err for err in report.stages["catalog_compliance"].errors)
+

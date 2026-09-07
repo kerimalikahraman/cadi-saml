@@ -1,8 +1,17 @@
-"""Conservative STEP inspection: annotate imported geometry without recutting it."""
+"""
+cadi_saml.reverse.inspection
+
+Conservative STEP inspection:
+Analyzes raw B-Rep geometry without recutting or generating fake assemblies.
+Extracts planar faces, inner holes, outer cylinders, PCD bolt patterns, and bounding box.
+"""
+
 from __future__ import annotations
 import math
 from pathlib import Path
+from typing import Dict, Any, List, Optional
 import numpy as np
+
 from OCP.STEPControl import STEPControl_Reader
 from OCP.IFSelect import IFSelect_RetDone
 from OCP.TopExp import TopExp_Explorer
@@ -16,8 +25,15 @@ from OCP.BRepBndLib import BRepBndLib
 from OCP.BRepClass3d import BRepClass3d_SolidClassifier
 from OCP.gp import gp_Pnt, gp_Vec
 
+
+class STEPParseError(RuntimeError):
+    """Raised when a STEP file cannot be parsed, transferred, or contains invalid geometry."""
+    pass
+
+
 def _xyz(p):
     return np.array([p.X(), p.Y(), p.Z()], dtype=float)
+
 
 def _pcd_patterns(holes, tolerance):
     groups = []
@@ -57,37 +73,88 @@ def _pcd_patterns(holes, tolerance):
         gaps = np.diff(np.r_[angles, angles[0] + 2 * math.pi])
         if np.max(abs(gaps - 2 * math.pi / len(group))) * radius > tolerance:
             continue
-        patterns.append({'count': len(group), 'diameter': group[0]['diameter'],
-                         'pcd': radius * 2, 'center': (origin + center[0] * u + center[1] * v).tolist(),
-                         'axis': normal.tolist(), 'hole_ids': [h['id'] for h in group],
-                         'confidence': 'geometric', 'radial_error_mm': float(np.max(abs(radii - radius)))})
+        patterns.append({
+            'count': len(group),
+            'diameter': group[0]['diameter'],
+            'pcd': radius * 2,
+            'center': (origin + center[0] * u + center[1] * v).tolist(),
+            'axis': normal.tolist(),
+            'hole_ids': [h['id'] for h in group],
+            'confidence': 'geometric',
+            'radial_error_mm': float(np.max(abs(radii - radius))),
+        })
     return patterns
 
-def inspect_step(step_file_path, part_name='imported_part', tolerance=1e-4):
+
+def inspect_step(
+    step_file_path: str,
+    part_name: str = 'inspected_part',
+    tolerance: float = 1e-4,
+    strict: bool = True,
+) -> Dict[str, Any]:
+    """
+    Pure inspection API for STEP files.
+    Extracts geometric metadata, surfaces, cylindrical holes, and bolt patterns.
+    Does NOT generate code or modify models.
+    """
     if not math.isfinite(tolerance) or tolerance <= 0:
         raise ValueError('tolerance must be finite and positive')
-    if not Path(step_file_path).is_file():
-        raise FileNotFoundError(step_file_path)
+
+    p = Path(step_file_path)
+    if not p.is_file():
+        err_msg = f"STEP file not found: {step_file_path}"
+        if strict:
+            raise FileNotFoundError(err_msg)
+        return {"status": "PARSE_ERROR", "error": err_msg}
+
     reader = STEPControl_Reader()
-    if reader.ReadFile(str(step_file_path)) != IFSelect_RetDone or reader.TransferRoots() == 0:
-        raise RuntimeError(f'Cannot read STEP: {step_file_path}')
+    status = reader.ReadFile(str(step_file_path))
+    if status != IFSelect_RetDone:
+        err_msg = f"Cannot read STEP (IFSelect error status {status}): {step_file_path}"
+        if strict:
+            raise STEPParseError(err_msg)
+        return {"status": "PARSE_ERROR", "error": err_msg}
+
+    if reader.TransferRoots() == 0:
+        err_msg = f"Cannot transfer roots for STEP: {step_file_path}"
+        if strict:
+            raise STEPParseError(err_msg)
+        return {"status": "PARSE_ERROR", "error": err_msg}
+
     shape = reader.OneShape()
+    if shape is None or shape.IsNull():
+        err_msg = f"STEP file contains no valid solid geometry: {step_file_path}"
+        if strict:
+            raise STEPParseError(err_msg)
+        return {"status": "PARSE_ERROR", "error": err_msg}
+
     bbox = Bnd_Box()
     BRepBndLib.Add_s(shape, bbox)
     bounds = bbox.Get()
+    dx = float(bounds[3] - bounds[0])
+    dy = float(bounds[4] - bounds[1])
+    dz = float(bounds[5] - bounds[2])
+
     planar, holes, cylinders = [], [], []
     exp = TopExp_Explorer(shape, TopAbs_FACE)
     index = 0
+
     while exp.More():
         face = TopoDS.Face_s(exp.Current())
         adaptor = BRepAdaptor_Surface(face)
         kind = adaptor.GetType()
+
         if kind == GeomAbs_Plane:
             plane = adaptor.Plane()
             normal = _xyz(plane.Axis().Direction())
             if face.Orientation() == TopAbs_REVERSED:
                 normal = -normal
-            planar.append({'id': f'face_{index}', 'pos': _xyz(plane.Location()).tolist(), 'normal': normal.tolist()})
+            planar.append({
+                'id': f'face_{index}',
+                'pos': _xyz(plane.Location()).tolist(),
+                'normal': normal.tolist(),
+            })
+
         elif kind == GeomAbs_Cylinder:
             cyl = adaptor.Cylinder()
             axis = _xyz(cyl.Axis().Direction())
@@ -104,16 +171,24 @@ def inspect_step(step_file_path, part_name='imported_part', tolerance=1e-4):
             a = _xyz(adaptor.Value((u0 + u1) / 2, v0))
             b = _xyz(adaptor.Value((u0 + u1) / 2, v1))
             ends = sorted([float(np.dot(a - origin, axis)), float(np.dot(b - origin, axis))])
-            entry = {'id': f'hole_{index}' if internal else f'cylinder_{index}',
-                     'diameter': 2 * cyl.Radius(), 'pos': (origin + ends[0] * axis).tolist(),
-                     'axis': axis.tolist(), 'depth': ends[1] - ends[0], 'source_face': index,
-                     'confidence': 'geometric', 'evidence': 'oriented surface normal versus radial direction'}
+            
+            entry = {
+                'id': f'hole_{index}' if internal else f'cylinder_{index}',
+                'diameter': round(2 * cyl.Radius(), 3),
+                'pos': (origin + ends[0] * axis).tolist(),
+                'axis': axis.tolist(),
+                'depth': round(ends[1] - ends[0], 3),
+                'source_face': index,
+                'confidence': 'geometric',
+                'evidence': 'oriented surface normal versus radial direction',
+            }
+
             if internal:
                 eps = max(tolerance * 10, entry['depth'] * 1e-5)
                 inside = []
                 for t in (ends[0] - eps, ends[1] + eps):
-                    p = origin + t * axis
-                    classifier = BRepClass3d_SolidClassifier(shape, gp_Pnt(*p), tolerance)
+                    p_test = origin + t * axis
+                    classifier = BRepClass3d_SolidClassifier(shape, gp_Pnt(*p_test), tolerance)
                     inside.append(classifier.State() == TopAbs_IN)
                 entry['kind'] = 'blind' if sum(inside) == 1 else ('through' if not any(inside) else 'enclosed_cavity')
                 if abs((u1 - u0) - 2 * math.pi) > 1e-5:
@@ -122,17 +197,26 @@ def inspect_step(step_file_path, part_name='imported_part', tolerance=1e-4):
                 holes.append(entry)
             else:
                 cylinders.append(entry)
+
         index += 1
         exp.Next()
+
     patterns = _pcd_patterns([h for h in holes if h['confidence'] == 'geometric'], tolerance)
-    lines = ['# Preserve imported geometry; add semantic ports only.', 'from cadi_saml import Assembly', '',
-             f'with Assembly({(part_name + "_assembly")!r}, units="mm") as asm:',
-             f'    part = asm.add_step_part({part_name!r}, {str(step_file_path)!r})']
-    for h in holes:
-        lines.append(f'    part.add_port({h["id"]!r}, port_type="hole", position={tuple(h["pos"])!r}, normal={tuple(h["axis"])!r}, diameter={h["diameter"]!r})')
-    return {'part_name': part_name, 'dimensions': dict(zip(('dx', 'dy', 'dz'), [bounds[i+3] - bounds[i] for i in range(3)])),
-            'num_planar_faces': len(planar), 'num_holes': len(holes), 'holes': holes,
-            'external_cylinders': cylinders, 'planar_faces': planar, 'pcd_patterns': patterns,
-            'saml_code': '\n'.join(lines), 'limitations': [
-                'Feature history is not reconstructed; split faces require review.',
-                'Counterbores and countersinks are not inferred from adjacent surfaces.']}
+
+    return {
+        'status': 'INSPECTED',
+        'part_name': part_name,
+        'dimensions': {'dx': round(dx, 3), 'dy': round(dy, 3), 'dz': round(dz, 3)},
+        'bounding_box': [round(v, 3) for v in bounds],
+        'num_planar_faces': len(planar),
+        'num_holes': len(holes),
+        'num_external_cylinders': len(cylinders),
+        'holes': holes,
+        'external_cylinders': cylinders,
+        'planar_faces': planar,
+        'pcd_patterns': patterns,
+        'limitations': [
+            'Inspection only: geometric features are identified but not compiled into a parametric model.',
+            'Use reconstruct_step() to synthesize standalone CADi SAML code.',
+        ],
+    }

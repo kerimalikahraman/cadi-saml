@@ -14,7 +14,7 @@ from .weldment_macros import add_gusset, add_end_cap
 from .planetary_macros import add_planetary_stage, solve_planetary_teeth
 from .cam_macros import add_disk_cam, evaluate_motion_law
 from .hole_wizard import add_threaded_hole, lookup_metric_thread, METRIC_THREADS
-from .piping_macros import add_pipe_route, PIPE_SCHEDULES
+from .piping_macros import add_pipe_route, PIPE_SCHEDULES, analyze_pipe_route_flow
 
 __all__ = [
     "add_bolted_joint",
@@ -39,4 +39,5 @@ __all__ = [
     "METRIC_THREADS",
     "add_pipe_route",
     "PIPE_SCHEDULES",
+    "analyze_pipe_route_flow",
 ]

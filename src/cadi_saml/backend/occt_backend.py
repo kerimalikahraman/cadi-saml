@@ -997,9 +997,13 @@ class OCCTBackend:
         for hole in part.holes:
             r = hole.diameter / 2.0
             hx, hy = hole.position
-            # For a box with top face at Z=h
-            top_z = float(part.parameters.get("height", 20.0))
-            depth = hole.depth if hole.depth > 0 else (top_z * 2.0)
+            # Determine top Z from the solid's actual bounding box
+            solid_bbox = Bnd.Bnd_Box()
+            BRepBndLib.BRepBndLib.Add_s(base_solid, solid_bbox)
+            _s_xmin, _s_ymin, _s_zmin, _s_xmax, _s_ymax, _s_zmax = solid_bbox.Get()
+            solid_h = float(_s_zmax - _s_zmin)
+            top_z = float(_s_zmax)
+            depth = hole.depth if hole.depth > 0 else (solid_h * 2.0)
 
             # Drill from top surface downwards
             ax = gp.gp_Ax2(gp.gp_Pnt(hx, hy, top_z + 0.1), gp.gp_Dir(0.0, 0.0, -1.0))

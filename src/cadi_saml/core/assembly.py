@@ -387,8 +387,9 @@ class PartReference:
         self._node.add_port(port)
         if hasattr(self._assembly, "_features") and self._assembly._features is not None:
             from ..features.solid_features import HoleFeature
+            parent_f = self._assembly._features.get_feature(self.name)
             self._assembly._features.add_feature(
-                HoleFeature(name=f"{self.name}_{name}", diameter=float(diameter), depth=float(depth), position=position, face=face)
+                HoleFeature(name=f"{self.name}_{name}", parent=parent_f, diameter=float(diameter), depth=float(depth), position=position, face=face)
             )
         return self
 
@@ -397,8 +398,9 @@ class PartReference:
         self._node.add_fillet(FilletNode(radius=float(radius), edge_selector=edges))
         if hasattr(self._assembly, "_features") and self._assembly._features is not None:
             from ..features.dressup_features import FilletFeature
+            parent_f = self._assembly._features.get_feature(self.name)
             self._assembly._features.add_feature(
-                FilletFeature(name=f"{self.name}_fillet_{len(self._assembly._features.features)}", radius=float(radius), edge_selector=edges)
+                FilletFeature(name=f"{self.name}_fillet_{len(self._assembly._features.features)}", parent=parent_f, radius=float(radius), edge_selector=edges)
             )
         return self
 
@@ -411,8 +413,9 @@ class PartReference:
         self._node.add_chamfer(ChamferNode(distance=float(distance), edge_selector=edges))
         if hasattr(self._assembly, "_features") and self._assembly._features is not None:
             from ..features.dressup_features import ChamferFeature
+            parent_f = self._assembly._features.get_feature(self.name)
             self._assembly._features.add_feature(
-                ChamferFeature(name=f"{self.name}_chamfer_{len(self._assembly._features.features)}", distance=float(distance), edge_selector=edges)
+                ChamferFeature(name=f"{self.name}_chamfer_{len(self._assembly._features.features)}", parent=parent_f, distance=float(distance), edge_selector=edges)
             )
         return self
 
@@ -420,13 +423,25 @@ class PartReference:
         """Alias for add_chamfer."""
         return self.add_chamfer(distance=distance, edges=edges)
 
+    def translate(self, dx: float, dy: float, dz: float) -> PartReference:
+        """Translates the part origin by (dx, dy, dz)."""
+        current_origin = self._node.parameters.get("origin", (0.0, 0.0, 0.0))
+        new_origin = (
+            float(current_origin[0] + dx),
+            float(current_origin[1] + dy),
+            float(current_origin[2] + dz),
+        )
+        self._node.parameters["origin"] = new_origin
+        return self
+
     def shell(self, thickness: float = 2.0, open_face: Optional[str] = "bottom") -> PartReference:
         """Hollow out the solid body leaving specified wall thickness."""
         self._node.set_shell(ShellNode(thickness=float(thickness), open_face=open_face))
         if hasattr(self._assembly, "_features") and self._assembly._features is not None:
             from ..features.solid_features import ShellFeature
+            parent_f = self._assembly._features.get_feature(self.name)
             self._assembly._features.add_feature(
-                ShellFeature(name=f"{self.name}_shell_{len(self._assembly._features.features)}", thickness=float(thickness), open_face=open_face)
+                ShellFeature(name=f"{self.name}_shell_{len(self._assembly._features.features)}", parent=parent_f, thickness=float(thickness), open_face=open_face)
             )
         return self
     def add_counterbore(self, cbore_dia: float, cbore_depth: float, hole_dia: float, origin: tuple = (0.0, 0.0, 0.0)) -> PartReference:
@@ -624,18 +639,57 @@ class Assembly:
         """
         return SafeEvaluator(self._variables).eval(val)
 
+    def preview_parameter_change(self, parameter_name: str, new_value: Any) -> Any:
+        """
+        Forecasts downstream geometric, structural, and cost impacts of updating a parameter
+        without mutating the live model state.
+        """
+        from .impact import DependencyImpactAnalyzer
+        analyzer = DependencyImpactAnalyzer(self)
+        return analyzer.preview_parameter_change(parameter_name, new_value)
+
 
 
     def _register_primitive_feature(self, name: str, shape: str, parameters: Dict[str, Any]) -> None:
         if hasattr(self, "_features") and self._features is not None:
-            from ..features.solid_features import PadFeature
-            l = float(parameters.get("length", parameters.get("radius", 5.0) * 2.0))
-            w = float(parameters.get("width", parameters.get("radius", 5.0) * 2.0))
-            h = float(parameters.get("height", 10.0))
+            shape_lower = str(shape).lower()
             orig = parameters.get("origin", (0.0, 0.0, 0.0))
-            self._features.add_feature(
-                PadFeature(name=name, length=l, width=w, height=h, origin=orig, parameters=copy.deepcopy(parameters))
-            )
+            if shape_lower == "cylinder":
+                from ..features.solid_features import CylinderFeature
+                r = float(parameters.get("radius", 5.0))
+                h = float(parameters.get("height", 10.0))
+                self._features.add_feature(
+                    CylinderFeature(name=name, radius=r, height=h, origin=orig, parameters=copy.deepcopy(parameters))
+                )
+            elif shape_lower == "cone":
+                from ..features.solid_features import ConeFeature
+                r1 = float(parameters.get("bottom_radius", 10.0))
+                r2 = float(parameters.get("top_radius", 0.0))
+                h = float(parameters.get("height", 10.0))
+                self._features.add_feature(
+                    ConeFeature(name=name, bottom_radius=r1, top_radius=r2, height=h, origin=orig, parameters=copy.deepcopy(parameters))
+                )
+            elif shape_lower == "sphere":
+                from ..features.solid_features import SphereFeature
+                r = float(parameters.get("radius", 5.0))
+                self._features.add_feature(
+                    SphereFeature(name=name, radius=r, origin=orig, parameters=copy.deepcopy(parameters))
+                )
+            elif shape_lower == "torus":
+                from ..features.solid_features import TorusFeature
+                r1 = float(parameters.get("major_radius", 10.0))
+                r2 = float(parameters.get("minor_radius", 2.0))
+                self._features.add_feature(
+                    TorusFeature(name=name, major_radius=r1, minor_radius=r2, origin=orig, parameters=copy.deepcopy(parameters))
+                )
+            else:
+                from ..features.solid_features import PadFeature
+                l = float(parameters.get("length", 10.0))
+                w = float(parameters.get("width", 10.0))
+                h = float(parameters.get("height", 10.0))
+                self._features.add_feature(
+                    PadFeature(name=name, length=l, width=w, height=h, origin=orig, parameters=copy.deepcopy(parameters))
+                )
 
     def add_box(
         self,
@@ -728,6 +782,7 @@ class Assembly:
         self._ir.add_part(part_node)
         ref = PartReference(part_node, self)
         self._parts[name] = ref
+        self._register_primitive_feature(name, "cone", part_node.parameters)
         return ref
 
     def add_frustum(
@@ -758,6 +813,7 @@ class Assembly:
         self._ir.add_part(part_node)
         ref = PartReference(part_node, self)
         self._parts[name] = ref
+        self._register_primitive_feature(name, "sphere", part_node.parameters)
         return ref
 
     def add_torus(self, name: str, major_radius: float, minor_radius: float) -> PartReference:
@@ -774,6 +830,7 @@ class Assembly:
         self._ir.add_part(part_node)
         ref = PartReference(part_node, self)
         self._parts[name] = ref
+        self._register_primitive_feature(name, "torus", part_node.parameters)
         return ref
 
     def add_fastener(
@@ -992,6 +1049,19 @@ class Assembly:
             keep_tool=keep_tool,
         )
         self._ir.add_boolean_op(op)
+        if hasattr(self, "_features") and self._features is not None:
+            from ..features.solid_features import BooleanFeature
+            parent_f = self._features.get_feature(target_part)
+            tool_f = self._features.get_feature(tool_part)
+            self._features.add_feature(
+                BooleanFeature(
+                    name=f"{target_part}_cut_{tool_part}",
+                    parent=parent_f,
+                    tool=tool_f,
+                    tool_name=tool_part,
+                    operation="cut",
+                )
+            )
 
     def fuse(self, target_part: str, tool_part: str, keep_tool: bool = False) -> None:
         """Union/fuse tool_part geometry with target_part."""
@@ -1002,6 +1072,19 @@ class Assembly:
             keep_tool=keep_tool,
         )
         self._ir.add_boolean_op(op)
+        if hasattr(self, "_features") and self._features is not None:
+            from ..features.solid_features import BooleanFeature
+            parent_f = self._features.get_feature(target_part)
+            tool_f = self._features.get_feature(tool_part)
+            self._features.add_feature(
+                BooleanFeature(
+                    name=f"{target_part}_fuse_{tool_part}",
+                    parent=parent_f,
+                    tool=tool_f,
+                    tool_name=tool_part,
+                    operation="fuse",
+                )
+            )
 
     def intersect(self, target_part: str, tool_part: str, keep_tool: bool = False) -> None:
         """Intersect target_part with tool_part."""
@@ -1012,6 +1095,19 @@ class Assembly:
             keep_tool=keep_tool,
         )
         self._ir.add_boolean_op(op)
+        if hasattr(self, "_features") and self._features is not None:
+            from ..features.solid_features import BooleanFeature
+            parent_f = self._features.get_feature(target_part)
+            tool_f = self._features.get_feature(tool_part)
+            self._features.add_feature(
+                BooleanFeature(
+                    name=f"{target_part}_intersect_{tool_part}",
+                    parent=parent_f,
+                    tool=tool_f,
+                    tool_name=tool_part,
+                    operation="intersect",
+                )
+            )
 
     def fillet(self, part_name: str, radius: float, edges: str = "all_top") -> Assembly:
         """Apply a round fillet to edges of a designated part ('all_top', 'all_bottom', 'vertical', 'circular', 'all', etc.)."""
@@ -1919,11 +2015,103 @@ class Assembly:
         self._metadata = self._ir.metadata
         self._parts = {name: PartReference(node, self) for name, node in self._ir.parts.items()}
         from ..features.feature_tree import FeatureTree
-        from ..features.solid_features import PadFeature
+        from ..features.solid_features import (
+            PadFeature,
+            CylinderFeature,
+            ConeFeature,
+            SphereFeature,
+            TorusFeature,
+            HoleFeature,
+            ShellFeature,
+            BooleanFeature,
+        )
+        from ..features.dressup_features import FilletFeature, ChamferFeature
         self._features = FeatureTree(name=self.name)
         for pname, pnode in self._ir.parts.items():
-            depth = float(pnode.parameters.get("height", pnode.parameters.get("length", 10.0)))
-            self._features.add_feature(PadFeature(name=pname, depth=depth, parameters=copy.deepcopy(pnode.parameters)))
+            shape = getattr(pnode, "shape", "box").lower()
+            params = copy.deepcopy(pnode.parameters)
+            orig = params.get("origin", (0.0, 0.0, 0.0))
+            if shape == "cylinder":
+                r = float(params.get("radius", 5.0))
+                h = float(params.get("height", 10.0))
+                base_f = CylinderFeature(name=pname, radius=r, height=h, origin=orig, parameters=params)
+            elif shape == "cone":
+                r1 = float(params.get("bottom_radius", 10.0))
+                r2 = float(params.get("top_radius", 0.0))
+                h = float(params.get("height", 10.0))
+                base_f = ConeFeature(name=pname, bottom_radius=r1, top_radius=r2, height=h, origin=orig, parameters=params)
+            elif shape == "sphere":
+                r = float(params.get("radius", 5.0))
+                base_f = SphereFeature(name=pname, radius=r, origin=orig, parameters=params)
+            elif shape == "torus":
+                r1 = float(params.get("major_radius", 10.0))
+                r2 = float(params.get("minor_radius", 2.0))
+                base_f = TorusFeature(name=pname, major_radius=r1, minor_radius=r2, origin=orig, parameters=params)
+            else:
+                l = float(params.get("length", 10.0))
+                w = float(params.get("width", 10.0))
+                h = float(params.get("height", 10.0))
+                base_f = PadFeature(name=pname, length=l, width=w, height=h, origin=orig, parameters=params)
+            self._features.add_feature(base_f)
+
+            # Re-register holes
+            for hnode in getattr(pnode, "holes", []):
+                self._features.add_feature(
+                    HoleFeature(
+                        name=f"{pname}_{hnode.name}",
+                        parent=base_f,
+                        diameter=float(hnode.diameter),
+                        depth=float(hnode.depth),
+                        position=hnode.position,
+                        face=hnode.face_alias,
+                    )
+                )
+            # Re-register fillets
+            for i, fnode in enumerate(getattr(pnode, "fillets", [])):
+                self._features.add_feature(
+                    FilletFeature(
+                        name=f"{pname}_fillet_{i+1}",
+                        parent=base_f,
+                        radius=float(fnode.radius),
+                        edge_selector=fnode.edge_selector,
+                    )
+                )
+            # Re-register chamfers
+            for i, cnode in enumerate(getattr(pnode, "chamfers", [])):
+                self._features.add_feature(
+                    ChamferFeature(
+                        name=f"{pname}_chamfer_{i+1}",
+                        parent=base_f,
+                        distance=float(cnode.distance),
+                        edge_selector=cnode.edge_selector,
+                    )
+                )
+            # Re-register shell
+            snode = getattr(pnode, "shell", None)
+            if snode is not None:
+                self._features.add_feature(
+                    ShellFeature(
+                        name=f"{pname}_shell",
+                        parent=base_f,
+                        thickness=float(snode.thickness),
+                        open_face=snode.open_face,
+                    )
+                )
+
+        # Re-register boolean operations
+        for b_op in getattr(self._ir, "boolean_ops", []):
+            parent_f = self._features.get_feature(b_op.target_part)
+            tool_f = self._features.get_feature(b_op.tool_part)
+            op_name = b_op.op_type.value.lower() if hasattr(b_op.op_type, "value") else str(b_op.op_type).lower()
+            self._features.add_feature(
+                BooleanFeature(
+                    name=f"{b_op.target_part}_{op_name}_{b_op.tool_part}",
+                    parent=parent_f,
+                    tool=tool_f,
+                    tool_name=b_op.tool_part,
+                    operation=op_name,
+                )
+            )
 
     def _record_revision(self, operation: str, payload: Dict[str, Any]) -> None:
         self._revision_log.append({"revision": len(self._revision_log) + 1, "operation": operation,
@@ -3401,6 +3589,10 @@ class Assembly:
         from ..macros.piping_macros import add_pipe_route
         return add_pipe_route(self, *args, **kwargs)
 
+    def analyze_pipe_flow(self, *args, **kwargs):
+        from ..macros.piping_macros import analyze_pipe_route_flow
+        return analyze_pipe_route_flow(self, *args, **kwargs)
+
     def add_rigid_flange_coupling(
         self,
         name: str,
@@ -3559,12 +3751,106 @@ class Assembly:
         """Returns the chronological and parametric feature tree."""
         if hasattr(self, "_features") and self._features and self._features.features:
             return self._features.to_tree_dict()
+        # Fallback tree reconstruction from IR, explicitly marked as synthetic
         from ..features.feature_tree import FeatureTree
-        from ..features.solid_features import PadFeature
+        from ..features.solid_features import (
+            PadFeature,
+            CylinderFeature,
+            ConeFeature,
+            SphereFeature,
+            TorusFeature,
+            HoleFeature,
+            ShellFeature,
+            BooleanFeature,
+        )
+        from ..features.dressup_features import FilletFeature, ChamferFeature
         tree = FeatureTree(name=self.name)
         for pname, pref in self._parts.items():
-            depth = float(pref.parameters.get("height", pref.parameters.get("length", 10.0)))
-            tree.add_feature(PadFeature(name=pname, depth=depth, parameters=copy.deepcopy(pref.parameters)))
+            pnode = pref.node
+            shape = getattr(pnode, "shape", "box").lower()
+            params = copy.deepcopy(pnode.parameters)
+            orig = params.get("origin", (0.0, 0.0, 0.0))
+            if shape == "cylinder":
+                r = float(params.get("radius", 5.0))
+                h = float(params.get("height", 10.0))
+                base_f = CylinderFeature(name=pname, radius=r, height=h, origin=orig, parameters=params)
+            elif shape == "cone":
+                r1 = float(params.get("bottom_radius", 10.0))
+                r2 = float(params.get("top_radius", 0.0))
+                h = float(params.get("height", 10.0))
+                base_f = ConeFeature(name=pname, bottom_radius=r1, top_radius=r2, height=h, origin=orig, parameters=params)
+            elif shape == "sphere":
+                r = float(params.get("radius", 5.0))
+                base_f = SphereFeature(name=pname, radius=r, origin=orig, parameters=params)
+            elif shape == "torus":
+                r1 = float(params.get("major_radius", 10.0))
+                r2 = float(params.get("minor_radius", 2.0))
+                base_f = TorusFeature(name=pname, major_radius=r1, minor_radius=r2, origin=orig, parameters=params)
+            else:
+                l = float(params.get("length", 10.0))
+                w = float(params.get("width", 10.0))
+                h = float(params.get("height", 10.0))
+                base_f = PadFeature(name=pname, length=l, width=w, height=h, origin=orig, parameters=params)
+            base_f.provenance["synthetic_tree"] = True
+            tree.add_feature(base_f)
+
+            for hnode in getattr(pnode, "holes", []):
+                hf = HoleFeature(
+                    name=f"{pname}_{hnode.name}",
+                    parent=base_f,
+                    diameter=float(hnode.diameter),
+                    depth=float(hnode.depth),
+                    position=hnode.position,
+                    face=hnode.face_alias,
+                )
+                hf.provenance["synthetic_tree"] = True
+                tree.add_feature(hf)
+
+            for i, fnode in enumerate(getattr(pnode, "fillets", [])):
+                ff = FilletFeature(
+                    name=f"{pname}_fillet_{i+1}",
+                    parent=base_f,
+                    radius=float(fnode.radius),
+                    edge_selector=fnode.edge_selector,
+                )
+                ff.provenance["synthetic_tree"] = True
+                tree.add_feature(ff)
+
+            for i, cnode in enumerate(getattr(pnode, "chamfers", [])):
+                cf = ChamferFeature(
+                    name=f"{pname}_chamfer_{i+1}",
+                    parent=base_f,
+                    distance=float(cnode.distance),
+                    edge_selector=cnode.edge_selector,
+                )
+                cf.provenance["synthetic_tree"] = True
+                tree.add_feature(cf)
+
+            snode = getattr(pnode, "shell", None)
+            if snode is not None:
+                sf = ShellFeature(
+                    name=f"{pname}_shell",
+                    parent=base_f,
+                    thickness=float(snode.thickness),
+                    open_face=snode.open_face,
+                )
+                sf.provenance["synthetic_tree"] = True
+                tree.add_feature(sf)
+
+        for b_op in getattr(self._ir, "boolean_ops", []):
+            parent_f = tree.get_feature(b_op.target_part)
+            tool_f = tree.get_feature(b_op.tool_part)
+            op_name = b_op.op_type.value.lower() if hasattr(b_op.op_type, "value") else str(b_op.op_type).lower()
+            bf = BooleanFeature(
+                name=f"{b_op.target_part}_{op_name}_{b_op.tool_part}",
+                parent=parent_f,
+                tool=tool_f,
+                tool_name=b_op.tool_part,
+                operation=op_name,
+            )
+            bf.provenance["synthetic_tree"] = True
+            tree.add_feature(bf)
+
         return tree.to_tree_dict()
 
     def get_dependencies(self, part_name: str) -> List[str]:

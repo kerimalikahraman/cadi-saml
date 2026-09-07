@@ -148,6 +148,16 @@ class FEAStudy:
         self._fixed_faces.append(face_selector)
         return self
 
+    @property
+    def fixed_nodes(self) -> Set[int]:
+        """Set of node indices fixed by boundary conditions."""
+        if self.nodes is None:
+            self.generate_mesh()
+        fixed: Set[int] = set()
+        for sel in self._fixed_faces:
+            fixed.update(self._get_matching_nodes(sel))
+        return fixed
+
     def apply_force(
         self,
         face: Union[str, Callable[[float, float, float], bool]],

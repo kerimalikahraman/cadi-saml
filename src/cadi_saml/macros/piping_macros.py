@@ -348,3 +348,106 @@ def add_pipe_route(
         "from_port": str(from_port),
         "to_port": str(to_port),
     }
+
+
+def analyze_pipe_route_flow(
+    assembly: "Assembly",
+    pipe_name: str,
+    flow_rate_l_s: Optional[float] = None,
+    velocity_m_s: Optional[float] = None,
+    fluid: str = "water",
+    temperature_c: float = 20.0,
+    material_roughness: Union[str, float] = "commercial_steel",
+    max_allowable_dp_bar: Optional[float] = None,
+    max_allowable_velocity: float = 3.0,
+) -> Dict[str, Any]:
+    """
+    Perform complete fluid dynamic (CFD/hydraulic) analysis on a modeled 3D pipe route.
+    Automatically accounts for major friction loss along developed route length
+    and minor bend losses for every elbow/corner waypoint.
+    """
+    from ..simulation.flow.pipe_flow import analyze_pipe_flow
+    from ..simulation.flow.fittings import FittingItem, calc_piping_system_loss
+
+    if pipe_name not in assembly._parts:
+        raise CADISpecificationError(
+            parameter_name="pipe_name",
+            provided_value=pipe_name,
+            valid_options=list(assembly._parts.keys()),
+            suggested_fix=f"Boru parçası '{pipe_name}' montajda bulunamadı.",
+        )
+
+    part_ref = assembly._parts[pipe_name]
+    params = part_ref.node.parameters
+
+    od = float(params.get("outer_dia", params.get("outer_diameter", 25.0)))
+    wt = float(params.get("wall_thickness", 2.0))
+    id_mm = max(1.0, od - 2.0 * wt)
+    cut_length_mm = float(params.get("cut_length_mm", 1000.0))
+    num_pts = int(params.get("num_waypoints", len(params.get("waypoints", []))))
+    num_bends = max(0, num_pts - 2)
+
+    # Major straight pipe calculation
+    pipe_res = analyze_pipe_flow(
+        diameter_mm=id_mm,
+        length_mm=cut_length_mm,
+        flow_rate_l_s=flow_rate_l_s,
+        velocity_m_s=velocity_m_s,
+        fluid=fluid,
+        temperature_c=temperature_c,
+        material_roughness=material_roughness,
+        max_allowable_dp_bar=max_allowable_dp_bar,
+        max_allowable_velocity=max_allowable_velocity,
+    )
+
+    # Minor fitting loss for route elbows
+    fittings = []
+    if num_bends > 0:
+        fittings.append(FittingItem(fitting_type="elbow_90_long_radius", count=num_bends))
+
+    system_losses = calc_piping_system_loss(pipe_res, fittings)
+
+    # Check against allowable pressure drop
+    status = "PASS"
+    changes = []
+    if max_allowable_dp_bar is not None and system_losses["total_pressure_drop_bar"] > max_allowable_dp_bar:
+        status = "FAIL"
+        if pipe_res.recommended_diameter_mm:
+            # Map recommended inner diameter back to nearest standard DN schedule
+            rec_std = None
+            for des, spec in PIPE_SCHEDULES.items():
+                cand_id = spec.outer_dia - 2.0 * spec.wall_thickness
+                if cand_id >= pipe_res.recommended_diameter_mm:
+                    rec_std = des
+                    break
+            changes.append({
+                "parameter": f"{pipe_name}.standard",
+                "current": params.get("standard", "CUSTOM"),
+                "proposed": rec_std or f"ID_{pipe_res.recommended_diameter_mm:.0f}mm",
+                "recommended_id_mm": pipe_res.recommended_diameter_mm,
+                "reason": f"Toplam sistem basınç kaybı ({system_losses['total_pressure_drop_bar']:.2f} bar) limiti ({max_allowable_dp_bar:.2f} bar) aşıyor.",
+            })
+
+    report = {
+        "pipe_name": pipe_name,
+        "status": status,
+        "fluid": pipe_res.fluid.name,
+        "temperature_c": temperature_c,
+        "flow_rate_l_s": pipe_res.flow_rate_m3_s * 1e3,
+        "velocity_m_s": round(pipe_res.velocity_m_s, 2),
+        "reynolds": round(pipe_res.reynolds, 0),
+        "flow_regime": pipe_res.flow_regime,
+        "friction_factor": round(pipe_res.friction_factor, 4),
+        "cut_length_m": round(pipe_res.length_m, 3),
+        "num_bends": num_bends,
+        "major_loss_bar": round(system_losses["major_loss_bar"], 4),
+        "minor_loss_bar": round(system_losses["minor_loss_bar"], 4),
+        "total_pressure_drop_bar": round(system_losses["total_pressure_drop_bar"], 4),
+        "total_hydraulic_power_w": round(system_losses["total_hydraulic_power_w"], 2),
+        "suggested_changes": changes,
+    }
+
+    # Store analysis inside part parameters for inspection and contract verification
+    part_ref.node.parameters["last_flow_analysis"] = report
+    return report
+

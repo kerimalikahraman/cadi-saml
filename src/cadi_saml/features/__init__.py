@@ -9,6 +9,11 @@ from cadi_saml.features.solid_features import (
     PocketFeature,
     HoleFeature,
     ShellFeature,
+    CylinderFeature,
+    ConeFeature,
+    SphereFeature,
+    TorusFeature,
+    BooleanFeature,
 )
 from cadi_saml.features.dressup_features import (
     FilletFeature,
@@ -27,6 +32,11 @@ __all__ = [
     "PocketFeature",
     "HoleFeature",
     "ShellFeature",
+    "CylinderFeature",
+    "ConeFeature",
+    "SphereFeature",
+    "TorusFeature",
+    "BooleanFeature",
     "FilletFeature",
     "ChamferFeature",
     "LinearPatternFeature",

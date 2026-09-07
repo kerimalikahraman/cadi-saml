@@ -217,3 +217,243 @@ class ShellFeature(Feature):
         if shell_maker.IsDone():
             return shell_maker.Shape()
         return parent_shape
+
+
+class CylinderFeature(Feature):
+    """
+    Parametric cylinder feature.
+    """
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        radius: float = 5.0,
+        height: float = 10.0,
+        origin: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        axis: Tuple[float, float, float] = (0.0, 0.0, 1.0),
+        fuse_with_parent: bool = False,
+        **kwargs,
+    ):
+        inputs = {
+            "radius": float(radius),
+            "height": float(height),
+            "origin": list(origin),
+            "axis": list(axis),
+            "fuse_with_parent": fuse_with_parent,
+            **kwargs,
+        }
+        super().__init__(name=name, parent=parent, inputs=inputs)
+
+    def _execute(self, parent_shape: Any, context: Dict[str, Any]) -> Any:
+        r = self.get_input("radius")
+        h = self.get_input("height")
+        ox, oy, oz = self.get_input("origin")
+        ax, ay, az = self.get_input("axis")
+
+        if not HAS_OCP:
+            return {"type": "cylinder", "radius": r, "height": h, "origin": (ox, oy, oz)}
+
+        direction = gp.gp_Dir(ax, ay, az)
+        ax2 = gp.gp_Ax2(gp.gp_Pnt(ox, oy, oz), direction)
+        solid = BRepPrim.BRepPrimAPI_MakeCylinder(ax2, r, h).Shape()
+
+        if parent_shape is not None and self.get_input("fuse_with_parent", False):
+            fuse_op = BRepAlgo.BRepAlgoAPI_Fuse(parent_shape, solid)
+            fuse_op.Build()
+            if fuse_op.IsDone():
+                return fuse_op.Shape()
+
+        return solid
+
+
+class ConeFeature(Feature):
+    """
+    Parametric cone or truncated cone feature.
+    """
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        bottom_radius: float = 10.0,
+        top_radius: float = 0.0,
+        height: float = 10.0,
+        origin: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        axis: Tuple[float, float, float] = (0.0, 0.0, 1.0),
+        fuse_with_parent: bool = False,
+        **kwargs,
+    ):
+        inputs = {
+            "bottom_radius": float(bottom_radius),
+            "top_radius": float(top_radius),
+            "height": float(height),
+            "origin": list(origin),
+            "axis": list(axis),
+            "fuse_with_parent": fuse_with_parent,
+            **kwargs,
+        }
+        super().__init__(name=name, parent=parent, inputs=inputs)
+
+    def _execute(self, parent_shape: Any, context: Dict[str, Any]) -> Any:
+        r1 = self.get_input("bottom_radius")
+        r2 = self.get_input("top_radius")
+        h = self.get_input("height")
+        ox, oy, oz = self.get_input("origin")
+        ax, ay, az = self.get_input("axis")
+
+        if not HAS_OCP:
+            return {"type": "cone", "bottom_radius": r1, "top_radius": r2, "height": h}
+
+        direction = gp.gp_Dir(ax, ay, az)
+        ax2 = gp.gp_Ax2(gp.gp_Pnt(ox, oy, oz), direction)
+        solid = BRepPrim.BRepPrimAPI_MakeCone(ax2, r1, r2, h).Shape()
+
+        if parent_shape is not None and self.get_input("fuse_with_parent", False):
+            fuse_op = BRepAlgo.BRepAlgoAPI_Fuse(parent_shape, solid)
+            fuse_op.Build()
+            if fuse_op.IsDone():
+                return fuse_op.Shape()
+
+        return solid
+
+
+class SphereFeature(Feature):
+    """
+    Parametric sphere feature.
+    """
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        radius: float = 5.0,
+        origin: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        fuse_with_parent: bool = False,
+        **kwargs,
+    ):
+        inputs = {
+            "radius": float(radius),
+            "origin": list(origin),
+            "fuse_with_parent": fuse_with_parent,
+            **kwargs,
+        }
+        super().__init__(name=name, parent=parent, inputs=inputs)
+
+    def _execute(self, parent_shape: Any, context: Dict[str, Any]) -> Any:
+        r = self.get_input("radius")
+        ox, oy, oz = self.get_input("origin")
+
+        if not HAS_OCP:
+            return {"type": "sphere", "radius": r, "origin": (ox, oy, oz)}
+
+        solid = BRepPrim.BRepPrimAPI_MakeSphere(gp.gp_Pnt(ox, oy, oz), r).Shape()
+
+        if parent_shape is not None and self.get_input("fuse_with_parent", False):
+            fuse_op = BRepAlgo.BRepAlgoAPI_Fuse(parent_shape, solid)
+            fuse_op.Build()
+            if fuse_op.IsDone():
+                return fuse_op.Shape()
+
+        return solid
+
+
+class TorusFeature(Feature):
+    """
+    Parametric torus feature.
+    """
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        major_radius: float = 10.0,
+        minor_radius: float = 2.0,
+        origin: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        axis: Tuple[float, float, float] = (0.0, 0.0, 1.0),
+        fuse_with_parent: bool = False,
+        **kwargs,
+    ):
+        inputs = {
+            "major_radius": float(major_radius),
+            "minor_radius": float(minor_radius),
+            "origin": list(origin),
+            "axis": list(axis),
+            "fuse_with_parent": fuse_with_parent,
+            **kwargs,
+        }
+        super().__init__(name=name, parent=parent, inputs=inputs)
+
+    def _execute(self, parent_shape: Any, context: Dict[str, Any]) -> Any:
+        r1 = self.get_input("major_radius")
+        r2 = self.get_input("minor_radius")
+        ox, oy, oz = self.get_input("origin")
+        ax, ay, az = self.get_input("axis")
+
+        if not HAS_OCP:
+            return {"type": "torus", "major_radius": r1, "minor_radius": r2}
+
+        direction = gp.gp_Dir(ax, ay, az)
+        ax2 = gp.gp_Ax2(gp.gp_Pnt(ox, oy, oz), direction)
+        solid = BRepPrim.BRepPrimAPI_MakeTorus(ax2, r1, r2).Shape()
+
+        if parent_shape is not None and self.get_input("fuse_with_parent", False):
+            fuse_op = BRepAlgo.BRepAlgoAPI_Fuse(parent_shape, solid)
+            fuse_op.Build()
+            if fuse_op.IsDone():
+                return fuse_op.Shape()
+
+        return solid
+
+
+class BooleanFeature(Feature):
+    """
+    Parametric Boolean Operation Feature (cut, fuse, intersect) connecting parent solid and tool.
+    """
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        parent: Optional[Feature] = None,
+        tool: Optional[Feature] = None,
+        operation: str = "cut",
+        tool_name: Optional[str] = None,
+        **kwargs,
+    ):
+        inputs = {
+            "operation": operation.lower(),
+            "tool_name": tool_name or (tool.name if tool else None),
+            **kwargs,
+        }
+        dependencies = [tool] if tool is not None else []
+        super().__init__(name=name, parent=parent, dependencies=dependencies, inputs=inputs)
+        self.tool = tool
+
+    def _execute(self, parent_shape: Any, context: Dict[str, Any]) -> Any:
+        if parent_shape is None:
+            raise ValueError(f"BooleanFeature '{self.name}' requires a parent shape.")
+
+        op = self.get_input("operation", "cut")
+        tool_shape = None
+        if self.tool is not None:
+            tool_shape = self.tool._shape
+        elif self.get_input("tool_name") in context:
+            tool_shape = context[self.get_input("tool_name")]
+
+        if not HAS_OCP or tool_shape is None:
+            return {"type": f"boolean_{op}", "parent": parent_shape, "tool": self.get_input("tool_name")}
+
+        if op == "cut":
+            algo = BRepAlgo.BRepAlgoAPI_Cut(parent_shape, tool_shape)
+        elif op == "fuse":
+            algo = BRepAlgo.BRepAlgoAPI_Fuse(parent_shape, tool_shape)
+        elif op == "intersect":
+            algo = BRepAlgo.BRepAlgoAPI_Common(parent_shape, tool_shape)
+        else:
+            raise ValueError(f"Unsupported boolean operation: {op}")
+
+        algo.Build()
+        if not algo.IsDone():
+            raise RuntimeError(f"Boolean operation '{op}' failed on '{self.name}'.")
+        return algo.Shape()
+

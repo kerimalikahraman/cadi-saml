@@ -77,50 +77,16 @@ class LinearElasticitySolver:
             [0.0, 0.0, 0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0],
         ], dtype=np.float64)
 
-    def solve(
-        self,
-        fixed_node_indices: Set[int],
-        nodal_forces: Dict[int, Tuple[float, float, float]],
-    ) -> FEMSolution:
+    def assemble_stiffness_matrix(self) -> Tuple[sp.csc_matrix, List[np.ndarray], np.ndarray]:
         """
-        Assembles stiffness matrix, applies boundary conditions, solves for displacements,
-        and computes resultant stresses.
+        Assembles global stiffness matrix K (csc_matrix) along with element B matrices and volumes.
         """
-        if not fixed_node_indices:
-            raise ValueError("FEA requires at least one fixed face/node to prevent rigid body motion.")
-
-        if any(i < 0 or i >= self.num_nodes for i in fixed_node_indices):
-            raise ValueError("Fixed node index out of range")
-        if any(i < 0 or i >= self.num_nodes or np.asarray(f).shape != (3,)
-               or not np.isfinite(f).all() for i, f in nodal_forces.items()):
-            raise ValueError("Invalid force node or vector")
-        # Check rigid body restraint separately on every connected mesh component.
-        parent = list(range(self.num_nodes))
-        def find(i):
-            while parent[i] != i:
-                parent[i] = parent[parent[i]]
-                i = parent[i]
-            return i
-        for tet in self.elements:
-            for i in tet[1:]:
-                parent[find(int(i))] = find(int(tet[0]))
-        groups = {}
-        for i in range(self.num_nodes):
-            groups.setdefault(find(i), []).append(i)
-        for ids in groups.values():
-            fixed = [i for i in ids if i in fixed_node_indices]
-            if len(fixed) < 3 or np.linalg.matrix_rank(self.nodes[fixed] - self.nodes[fixed].mean(axis=0)) < 2:
-                raise ValueError("Underconstrained mesh component: fix at least three non-collinear nodes")
-
-        # 1. Assemble Global Stiffness Matrix K
-        # Preallocate triplet arrays for COO sparse matrix (M elements * 12 * 12 = 144 * M entries)
         num_elem = self.num_elements
         entry_count = num_elem * 144
         rows = np.empty(entry_count, dtype=np.int32)
         cols = np.empty(entry_count, dtype=np.int32)
         vals = np.empty(entry_count, dtype=np.float64)
 
-        # Store B matrices and volumes for stress calculation
         elem_B_matrices = []
         elem_volumes = np.empty(num_elem, dtype=np.float64)
 
@@ -182,6 +148,49 @@ class LinearElasticitySolver:
             offset += 144
 
         K_global = sp.coo_matrix((vals, (rows, cols)), shape=(self.num_dofs, self.num_dofs)).tocsc()
+        return K_global, elem_B_matrices, elem_volumes
+
+    def _assemble_stiffness_matrix(self) -> sp.csc_matrix:
+        K_global, _, _ = self.assemble_stiffness_matrix()
+        return K_global
+
+    def solve(
+        self,
+        fixed_node_indices: Set[int],
+        nodal_forces: Dict[int, Tuple[float, float, float]],
+    ) -> FEMSolution:
+        """
+        Assembles stiffness matrix, applies boundary conditions, solves for displacements,
+        and computes resultant stresses.
+        """
+        if not fixed_node_indices:
+            raise ValueError("FEA requires at least one fixed face/node to prevent rigid body motion.")
+
+        if any(i < 0 or i >= self.num_nodes for i in fixed_node_indices):
+            raise ValueError("Fixed node index out of range")
+        if any(i < 0 or i >= self.num_nodes or np.asarray(f).shape != (3,)
+               or not np.isfinite(f).all() for i, f in nodal_forces.items()):
+            raise ValueError("Invalid force node or vector")
+        # Check rigid body restraint separately on every connected mesh component.
+        parent = list(range(self.num_nodes))
+        def find(i):
+            while parent[i] != i:
+                parent[i] = parent[parent[i]]
+                i = parent[i]
+            return i
+        for tet in self.elements:
+            for i in tet[1:]:
+                parent[find(int(i))] = find(int(tet[0]))
+        groups = {}
+        for i in range(self.num_nodes):
+            groups.setdefault(find(i), []).append(i)
+        for ids in groups.values():
+            fixed = [i for i in ids if i in fixed_node_indices]
+            if len(fixed) < 3 or np.linalg.matrix_rank(self.nodes[fixed] - self.nodes[fixed].mean(axis=0)) < 2:
+                raise ValueError("Underconstrained mesh component: fix at least three non-collinear nodes")
+
+        # 1. Assemble Global Stiffness Matrix K
+        K_global, elem_B_matrices, elem_volumes = self.assemble_stiffness_matrix()
 
         # 2. Assemble Force Vector F
         F_global = np.zeros(self.num_dofs, dtype=np.float64)
@@ -230,6 +239,7 @@ class LinearElasticitySolver:
         max_displacement = float(np.max(disp_magnitudes))
 
         # 4. Compute Element and Nodal Stresses
+        num_elem = self.num_elements
         elem_stresses = np.zeros((num_elem, 6), dtype=np.float64)
         elem_von_mises = np.zeros(num_elem, dtype=np.float64)
 
