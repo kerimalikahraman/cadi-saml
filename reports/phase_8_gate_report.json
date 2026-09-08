@@ -1,0 +1,37 @@
+{
+  "phase_number": 8,
+  "phase_name": "LLM Entegrasyon Sınırı",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 5,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_llm_interface.py::test_runtime_schema_is_json_safe_and_matches_signature": "PASSED",
+    "tests/test_llm_interface.py::test_compact_inspect_and_semantic_diff": "PASSED",
+    "tests/test_llm_interface.py::test_preview_patch_isolated_validation_commit_and_conflict": "PASSED",
+    "tests/test_token_reduction.py::test_token_reduction_benchmark": "PASSED",
+    "tests/test_llm_interface.py::test_preview_patch_rejects_unknown_or_invalid_paths_without_mutation": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:23:04.400921+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:23:04.400921+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_llm_interface.py::test_compact_inspect_and_semantic_diff",
+    "tests/test_llm_interface.py::test_preview_patch_isolated_validation_commit_and_conflict",
+    "tests/test_llm_interface.py::test_preview_patch_rejects_unknown_or_invalid_paths_without_mutation",
+    "tests/test_llm_interface.py::test_runtime_schema_is_json_safe_and_matches_signature",
+    "tests/test_token_reduction.py::test_token_reduction_benchmark"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

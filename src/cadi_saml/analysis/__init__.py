@@ -1,39 +1,42 @@
 """
 cadi_saml.analysis
 ==================
-Finite Element Analysis (FEA), Structural Simulation, Mold Draft & Undercut Analysis,
-SIMP Topology Optimization, Composites Design (CPD), KnowledgeWare Design Rules,
-and Class-A Surface Continuity module for cadi_saml.
+Finite Element Analysis (FEA) and Structural Simulation module for cadi_saml.
 """
 
 from .materials import Material, MATERIALS_DB, get_material
 from .solver import LinearElasticitySolver, FEMSolution
-from .fea import FEAStudy, FEAResult
+from .fea import FEAStudy, FEAResult, InterfaceResult, GmshNotAvailableError
 from .design import DimensionTolerance, ToleranceStack, DesignStudy
-from .draft_analysis import analyze_draft
-from .topology import TopologyOptimizer, TopologyResult, optimize_topology
-from .composites import (
-    CompositeMaterial,
-    COMPOSITE_MATERIALS,
-    Ply,
-    LaminateLayup,
-    add_composite_panel,
+from .calculix_adapter import CalculiXModel, MaterialRegion
+from .calculix_runner import CalculiXRunner
+from .frd_reader import (
+    parse_frd,
+    write_frd,
+    frd_to_fea_result,
+    RegionalResult,
+    FRDData,
+    calc_von_mises,
+    _normalize_element_sets,
+    normalize_element_sets,
 )
-from .rules import (
-    DesignRule,
-    RuleViolation,
-    HoleEdgeDistanceRule,
-    SheetMetalBendRadiusRule,
-    BoltSpacingRule,
-    DesignRuleEngine,
-    check_design_rules,
+from .visualization import export_image, export_vtk, export_interactive_html
+from .benchmark import (
+    compute_analytical_cantilever,
+    generate_structured_beam_mesh,
+    BenchmarkValidator,
+    BenchmarkComparisonResult,
+    AnalyticalBeamResult,
 )
-from .surface_continuity import check_surface_continuity
+from .convergence import (
+    MeshConvergenceStudy,
+    MeshRefinementStep,
+    ConvergenceStudyResult,
+)
+from .report import PortableFEAReport
 
 __all__ = [
-    "DimensionTolerance",
-    "ToleranceStack",
-    "DesignStudy",
+    "DimensionTolerance", "ToleranceStack", "DesignStudy",
     "Material",
     "MATERIALS_DB",
     "get_material",
@@ -41,21 +44,29 @@ __all__ = [
     "FEMSolution",
     "FEAStudy",
     "FEAResult",
-    "analyze_draft",
-    "TopologyOptimizer",
-    "TopologyResult",
-    "optimize_topology",
-    "CompositeMaterial",
-    "COMPOSITE_MATERIALS",
-    "Ply",
-    "LaminateLayup",
-    "add_composite_panel",
-    "DesignRule",
-    "RuleViolation",
-    "HoleEdgeDistanceRule",
-    "SheetMetalBendRadiusRule",
-    "BoltSpacingRule",
-    "DesignRuleEngine",
-    "check_design_rules",
-    "check_surface_continuity",
+    "InterfaceResult",
+    "GmshNotAvailableError",
+    "CalculiXModel",
+    "MaterialRegion",
+    "CalculiXRunner",
+    "parse_frd",
+    "write_frd",
+    "frd_to_fea_result",
+    "RegionalResult",
+    "FRDData",
+    "calc_von_mises",
+    "_normalize_element_sets",
+    "normalize_element_sets",
+    "export_image",
+    "export_vtk",
+    "export_interactive_html",
+    "compute_analytical_cantilever",
+    "generate_structured_beam_mesh",
+    "BenchmarkValidator",
+    "BenchmarkComparisonResult",
+    "AnalyticalBeamResult",
+    "MeshConvergenceStudy",
+    "MeshRefinementStep",
+    "ConvergenceStudyResult",
+    "PortableFEAReport",
 ]

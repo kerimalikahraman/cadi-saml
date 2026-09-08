@@ -18,11 +18,33 @@ import numpy as np
 import OCP.STEPControl as STEPControl
 import OCP.TopoDS as TopoDS
 import OCP.BRepGProp as BRepGProp
-import OCP.GProp as GProp
-import gmsh
+try:
+    import gmsh
+except ImportError:
+    gmsh = None
 
 from .materials import Material, get_material
 from .solver import FEMSolution, LinearElasticitySolver
+
+
+class GmshNotAvailableError(ImportError):
+    """
+    Raised when automatic 3D tetrahedral meshing is requested from a CAD B-Rep solid
+    but the Gmsh Python package ('gmsh') is not installed in the environment.
+    """
+    pass
+
+
+@dataclass
+class InterfaceResult:
+    """Stress and structural integrity evaluation at material contact boundary."""
+    region_a: str
+    region_b: str
+    num_interface_nodes: int
+    max_von_mises_mpa: float
+    mean_von_mises_mpa: float
+    safety_factor: float
+    is_safe: bool
 
 
 @dataclass
@@ -48,18 +70,29 @@ class FEAResult:
     required_safety_factor: float = 1.5
     max_displacement_limit_mm: Optional[float] = None
     solution_valid: bool = True
+    solver_backend: str = "builtin"
     criteria_passed: Dict[str, bool] = field(default_factory=dict)
+    materials: Dict[str, Material] = field(default_factory=dict)
+    regional_results: Dict[str, Any] = field(default_factory=dict)
+    interface_results: Dict[str, Any] = field(default_factory=dict)
+    element_material_ids: Optional[np.ndarray] = field(default=None, repr=False)
+    reaction_forces: Optional[np.ndarray] = field(default=None, repr=False)
+    solver_version: Optional[str] = None
+    solver_command: Optional[str] = None
 
     @property
     def summary_report(self) -> str:
         """Structured engineering validation report."""
         status_icon = "[PASS]" if self.is_safe else "[WARN]"
-        return (
+        report = (
             f"\n=======================================================\n"
             f"  CADi FEA STRUCTURAL SIMULATION REPORT\n"
             f"=======================================================\n"
             f"Study Name       : {self.study_name}\n"
             f"Part Analyzed    : {self.part_name}\n"
+            f"Solver Backend   : {self.solver_backend}\n"
+            f"Solver Version   : {self.solver_version or 'N/A'}\n"
+            f"Solver Command   : {self.solver_command or 'N/A'}\n"
             f"Material         : {self.material.name} (E={self.material.youngs_modulus_mpa:,.0f} MPa, Sy={self.yield_strength_mpa:.1f} MPa)\n"
             f"Mesh Statistics  : {self.num_nodes:,} Nodes | {self.num_elements:,} 3D Tetrahedral Elements\n"
             f"-------------------------------------------------------\n"
@@ -67,8 +100,15 @@ class FEAResult:
             f"Max Deflection   : {self.max_displacement_mm:.4f} mm\n"
             f"Factor of Safety : {self.safety_factor:.2f} (Target: >= {self.required_safety_factor:.2f})\n"
             f"Status           : {status_icon} {self.status}\n"
-            f"=======================================================\n"
         )
+        if self.interface_results:
+            report += f"-------------------------------------------------------\n"
+            report += f"Material Interfaces:\n"
+            for k, ir in self.interface_results.items():
+                s_icon = "SAFE" if ir.is_safe else "OVERLOAD"
+                report += f"  {ir.region_a} <-> {ir.region_b}: Max VM = {ir.max_von_mises_mpa:.2f} MPa | FoS = {ir.safety_factor:.2f} [{s_icon}]\n"
+        report += f"=======================================================\n"
+        return report
 
     def export_vtk(self, filepath: str) -> str:
         """
@@ -85,6 +125,14 @@ class FEAResult:
         """
         from .visualization import export_interactive_html
         return export_interactive_html(self, filepath, deformation_scale=deformation_scale)
+
+    def export_image(self, filepath: str, deformation_scale: float = 10.0, dpi: int = 150) -> str:
+        """
+        Renders high-resolution 2D/3D PNG static image with Von Mises heatmap,
+        deformation, colorbar, and engineering safety card.
+        """
+        from .visualization import export_image
+        return export_image(self, filepath, deformation_scale=deformation_scale, dpi=dpi)
 
 
 class FEAStudy:
@@ -130,6 +178,17 @@ class FEAStudy:
         self.nodes = self.elements = None
         return self
 
+    def set_mesh(self, nodes: Any, elements: Any) -> FEAStudy:
+        """
+        Manually assigns pre-generated 3D tetrahedral mesh geometry,
+        allowing full FEA solving and post-processing without Gmsh.
+        - nodes: (N, 3) float array of nodal coordinates.
+        - elements: (M, 4) int array of 0-based tetrahedral element vertex indices.
+        """
+        self.nodes = np.asarray(nodes, dtype=np.float64)
+        self.elements = np.asarray(elements, dtype=np.int32)
+        return self
+
     def fix_face(
         self,
         face_selector: Union[str, Callable[[float, float, float], bool]],
@@ -147,16 +206,6 @@ class FEAStudy:
         """
         self._fixed_faces.append(face_selector)
         return self
-
-    @property
-    def fixed_nodes(self) -> Set[int]:
-        """Set of node indices fixed by boundary conditions."""
-        if self.nodes is None:
-            self.generate_mesh()
-        fixed: Set[int] = set()
-        for sel in self._fixed_faces:
-            fixed.update(self._get_matching_nodes(sel))
-        return fixed
 
     def apply_force(
         self,
@@ -201,6 +250,12 @@ class FEAStudy:
         """
         Generates a 3D linear tetrahedral mesh (C3D4) directly from the OpenCASCADE solid shape.
         """
+        if gmsh is None:
+            raise GmshNotAvailableError(
+                f"Cannot mesh part '{self.part_name}': Gmsh Python module is not installed. "
+                "Automatic 3D tetrahedral meshing from CAD solid B-Rep geometry requires 'gmsh'. "
+                "Please run: pip install gmsh, or supply an existing mesh using fea.set_mesh(nodes, elements)."
+            )
         if self.solid_shape is None or self.solid_shape.IsNull():
             raise ValueError(f"Cannot mesh part '{self.part_name}': Solid shape is None or Null.")
 

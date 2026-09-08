@@ -132,6 +132,19 @@ class PatternNode:
     axis: Tuple[float, float, float] = (0.0, 0.0, 1.0)
     angle: float = 360.0                         # Total span angle for circular
     spacing: Tuple[float, float, float] = (0.0, 0.0, 0.0)  # (dx, dy, dz) step for linear
+    create_instances: bool = False
+    prefix: Optional[str] = None
+
+
+@dataclass
+class MirrorNode:
+    """Mirror operation creating a symmetric part across a plane."""
+    name: str
+    source_part: str
+    plane: str = "XZ"                           # 'XY', 'XZ', 'YZ', or 'CUSTOM'
+    point: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+    normal: Tuple[float, float, float] = (0.0, 1.0, 0.0)
+    keep_original: bool = True
 
 
 class BooleanOpType(str, Enum):
@@ -208,6 +221,9 @@ class PartNode:
     color: Optional[Tuple[float, float, float]] = None       # RGB (0.0 - 1.0)
     material: Optional[str] = None
     draft_angle: Optional[Dict[str, Any]] = None             # Casting / molding draft angle parameters
+    source_part: Optional[str] = None                         # Master part name if this part is a linked instance or mirror
+    instance_offset: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+    instance_rotation: Optional[Dict[str, Any]] = None        # {'axis': (ax,ay,az), 'angle_deg': float, 'center': (cx,cy,cz)}
     spec_provenance: Dict[str, Dict[str, Any]] = field(default_factory=dict)  # Parameter provenance trace
 
     def track_provenance(
@@ -300,6 +316,7 @@ class AssemblyIR:
     mates: List[MateNode] = field(default_factory=list)
     boolean_ops: List[BooleanNode] = field(default_factory=list)
     patterns: List[PatternNode] = field(default_factory=list)
+    mirrors: List[MirrorNode] = field(default_factory=list)
     parameters: Dict[str, float] = field(default_factory=dict)
 
     def add_part(self, part: PartNode) -> None:
@@ -313,6 +330,9 @@ class AssemblyIR:
 
     def add_pattern(self, pattern: PatternNode) -> None:
         self.patterns.append(pattern)
+
+    def add_mirror(self, mirror: MirrorNode) -> None:
+        self.mirrors.append(mirror)
 
     def set_param(self, name: str, value: float) -> None:
         self.parameters[name] = float(value)

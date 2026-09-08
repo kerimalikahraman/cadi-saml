@@ -1,0 +1,35 @@
+{
+  "phase_number": 4,
+  "phase_name": "Taşınabilir Rapor ve Veri Hattı",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 4,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_fea_verification_and_convergence.py::test_portable_fea_report_generation": "PASSED",
+    "tests/test_fea_verification_and_convergence.py::test_calculix_model_index_base_and_multi_material_contract": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_fea_result_permanent_dataclass_fields": "PASSED",
+    "tests/test_fea_verification_and_convergence.py::test_element_indexing_strict_validation_and_rejection": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:22:23.559753+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:22:23.559753+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_fea_verification_and_convergence.py::test_calculix_model_index_base_and_multi_material_contract",
+    "tests/test_fea_verification_and_convergence.py::test_element_indexing_strict_validation_and_rejection",
+    "tests/test_fea_verification_and_convergence.py::test_portable_fea_report_generation",
+    "tests/test_heterogeneous_fea.py::test_fea_result_permanent_dataclass_fields"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

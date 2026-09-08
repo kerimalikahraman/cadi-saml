@@ -85,12 +85,60 @@ class OCCTBackend:
         self._solids.clear()
         self._transforms.clear()
 
-        # 1. Build unpositioned solids for all parts (using incremental cache)
+        # 1. Build unpositioned solids for all parts (topological: base parts first, then instances/mirrors)
+        base_parts = {}
+        derived_parts = {}
         for name, part in ir.parts.items():
+            if (part.part_type in ("instance", "mirror") or part.source_part is not None):
+                derived_parts[name] = part
+            else:
+                base_parts[name] = part
+
+        for name, part in base_parts.items():
             shape = self._build_part_solid(part)
             self._solids[name] = shape
-            trsf = gp.gp_Trsf()
-            self._transforms[name] = trsf
+            self._transforms[name] = gp.gp_Trsf()
+
+        for name, part in derived_parts.items():
+            src_name = part.source_part or part.parameters.get("source_part")
+            if src_name and src_name in self._solids:
+                source_shape = self._solids[src_name]
+                if part.part_type == "instance":
+                    tr = gp.gp_Trsf()
+                    if part.instance_rotation:
+                        rot = part.instance_rotation
+                        ax = rot.get("axis", (0.0, 0.0, 1.0))
+                        ang = math.radians(rot.get("angle_deg", 0.0))
+                        c = rot.get("center", (0.0, 0.0, 0.0))
+                        ax1 = gp.gp_Ax1(gp.gp_Pnt(*c), gp.gp_Dir(*ax))
+                        tr.SetRotation(ax1, ang)
+                    if hasattr(part, "instance_offset") and any(abs(x) > 1e-9 for x in part.instance_offset):
+                        tr_trans = gp.gp_Trsf()
+                        tr_trans.SetTranslation(gp.gp_Vec(*part.instance_offset))
+                        tr = tr_trans.Multiplied(tr)
+                    if tr.Form() != gp.gp_Identity:
+                        shape = BRepBuilder.BRepBuilderAPI_Transform(source_shape, tr, True).Shape()
+                    else:
+                        shape = source_shape
+                    self._solids[name] = shape
+                    self._transforms[name] = gp.gp_Trsf()
+                elif part.part_type == "mirror":
+                    pnt = part.parameters.get("point", (0.0, 0.0, 0.0))
+                    normal = part.parameters.get("normal", (0.0, 1.0, 0.0))
+                    tr = gp.gp_Trsf()
+                    ax2 = gp.gp_Ax2(gp.gp_Pnt(*pnt), gp.gp_Dir(*normal))
+                    tr.SetMirror(ax2)
+                    shape = BRepBuilder.BRepBuilderAPI_Transform(source_shape, tr, True).Shape()
+                    self._solids[name] = shape
+                    self._transforms[name] = gp.gp_Trsf()
+                else:
+                    shape = self._build_part_solid(part)
+                    self._solids[name] = shape
+                    self._transforms[name] = gp.gp_Trsf()
+            else:
+                shape = self._build_part_solid(part)
+                self._solids[name] = shape
+                self._transforms[name] = gp.gp_Trsf()
 
         # 2. Solve mates and apply transformations with compound DOF constraint solver
         self._solve_all_mates(ir)
@@ -140,6 +188,9 @@ class OCCTBackend:
         # 5. Apply pattern replications (Circular & Linear arrays)
         pattern_generated: Dict[str, TopoDS.TopoDS_Shape] = {}
         for pat in ir.patterns:
+            if getattr(pat, "create_instances", False):
+                # Pattern already generated individual instances in Assembly
+                continue
             if pat.target_part in final_solids:
                 source_shape = final_solids[pat.target_part]
                 if pat.pattern_type == PatternType.CIRCULAR:
@@ -159,6 +210,18 @@ class OCCTBackend:
                         pattern_generated[f"{pat.target_part}_pattern_{i}"] = tr_shape
 
         final_solids.update(pattern_generated)
+
+        # 6. Apply MirrorNode replications if any not already in final_solids
+        for mir in getattr(ir, "mirrors", []):
+            if mir.name not in final_solids and mir.source_part in final_solids:
+                src_shape = final_solids[mir.source_part]
+                tr = gp.gp_Trsf()
+                ax2 = gp.gp_Ax2(gp.gp_Pnt(*mir.point), gp.gp_Dir(*mir.normal))
+                tr.SetMirror(ax2)
+                mir_shape = BRepBuilder.BRepBuilderAPI_Transform(src_shape, tr, True).Shape()
+                final_solids[mir.name] = mir_shape
+                if not mir.keep_original and mir.source_part in final_solids:
+                    del final_solids[mir.source_part]
 
         return final_solids
 

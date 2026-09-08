@@ -5,12 +5,15 @@ Supports standard geometric mates and advanced mechanical couples (GearMesh, Bel
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
+import math
 
 
 class AssemblyMate(ABC):
     """Abstract Base Class for all 3D assembly mates."""
 
     def __init__(self, name: str, part_a: str, part_b: str):
+        if not part_a or not part_b or part_a == part_b:
+            raise ValueError("assembly mate requires two distinct non-empty parts")
         self.name = name
         self.part_a = part_a
         self.part_b = part_b
@@ -59,6 +62,8 @@ class DistanceMate(AssemblyMate):
     """Maintains a specified distance between two planar faces (removes 1 DOF)."""
 
     def __init__(self, part_a: str, part_b: str, distance: float):
+        if not math.isfinite(distance) or distance < 0:
+            raise ValueError("distance must be a finite non-negative number")
         super().__init__(f"Distance({part_a}, {part_b}) = {distance}", part_a, part_b)
         self.distance = float(distance)
 
@@ -126,6 +131,10 @@ class GearMeshMate(AssemblyMate):
     """Couples rotation of two gears according to gear ratio: theta_b = - (z_a / z_b) * theta_a."""
 
     def __init__(self, gear_a: str, gear_b: str, ratio: float, backlash: float = 0.05):
+        if not math.isfinite(ratio) or ratio == 0:
+            raise ValueError("gear ratio must be finite and non-zero")
+        if not math.isfinite(backlash) or backlash < 0:
+            raise ValueError("backlash must be finite and non-negative")
         super().__init__(f"GearMesh({gear_a}, {gear_b}, ratio={ratio})", gear_a, gear_b)
         self.ratio = float(ratio)
         self.backlash = float(backlash)
@@ -184,6 +193,8 @@ class LimitMate(AssemblyMate):
     """Constrains motion within a specified minimum and maximum bounding range."""
 
     def __init__(self, part_a: str, part_b: str, min_val: float, max_val: float, motion_type: str = "distance"):
+        if not math.isfinite(min_val) or not math.isfinite(max_val) or min_val > max_val:
+            raise ValueError("limit mate requires finite min_val <= max_val")
         super().__init__(f"LimitMate({part_a}, {part_b})", part_a, part_b)
         self.min_val = float(min_val)
         self.max_val = float(max_val)

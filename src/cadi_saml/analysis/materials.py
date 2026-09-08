@@ -158,9 +158,22 @@ _ALIASES: Dict[str, str] = {
     "steel": "S235JR",
     "structural_steel": "S235JR",
     "aluminum": "Alu6061-T6",
+    "aluminium": "Alu6061-T6",
     "alu": "Alu6061-T6",
     "6061": "Alu6061-T6",
+    "6061-t6": "Alu6061-T6",
+    "6061_t6": "Alu6061-T6",
+    "al6061_t6": "Alu6061-T6",
+    "alu6061_t6": "Alu6061-T6",
+    "al6061-t6": "Alu6061-T6",
+    "alu6061-t6": "Alu6061-T6",
     "7075": "Alu7075-T6",
+    "7075-t6": "Alu7075-T6",
+    "7075_t6": "Alu7075-T6",
+    "al7075_t6": "Alu7075-T6",
+    "alu7075_t6": "Alu7075-T6",
+    "al7075-t6": "Alu7075-T6",
+    "alu7075-t6": "Alu7075-T6",
     "titanium": "Ti6Al4V",
     "ti": "Ti6Al4V",
     "stainless": "Stainless304",
@@ -180,9 +193,15 @@ def get_material(name_or_code: str) -> Material:
     if lower_key in _ALIASES:
         return MATERIALS_DB[_ALIASES[lower_key]]
 
+    # Normalized comparison (e.g. alu_6061_t6 vs alu6061-t6)
+    clean_key = lower_key.replace("_", "").replace("-", "")
+    for alias_key, db_target in _ALIASES.items():
+        if alias_key.replace("_", "").replace("-", "") == clean_key:
+            return MATERIALS_DB[db_target]
+
     # Case-insensitive match
     for db_key, mat in MATERIALS_DB.items():
-        if db_key.lower() == lower_key:
+        if db_key.lower() == lower_key or db_key.lower().replace("_", "").replace("-", "") == clean_key:
             return mat
 
     raise ValueError(f"Unknown material {name_or_code!r}. Available: {sorted(MATERIALS_DB)}")

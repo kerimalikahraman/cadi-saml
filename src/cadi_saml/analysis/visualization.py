@@ -569,3 +569,145 @@ def export_interactive_html(
         f.write(html)
 
     return out_path
+
+
+def export_image(
+    result: FEAResult,
+    filepath: str,
+    deformation_scale: float = 10.0,
+    dpi: int = 150,
+) -> str:
+    """
+    Renders high-resolution 2D/3D PNG static image of the FEA simulation results:
+    - 3D deformed surface mesh colored by Von Mises stress contour heatmap
+    - Colorbar with MPa stress gradient
+    - Engineering summary card with regional safety factors and material breakdown
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import Normalize
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+    out_path = os.path.abspath(filepath)
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+
+    nodes = result.nodes if result.nodes is not None else result.raw_solution.nodes
+    elements = result.elements if result.elements is not None else result.raw_solution.elements
+    displacements = result.nodal_displacements
+    nodal_stresses = result.nodal_von_mises
+
+    # Extract boundary surface triangles
+    face_counts = Counter()
+    face_orientations = {}
+    for e in elements:
+        faces = [
+            (e[0], e[1], e[2]),
+            (e[0], e[2], e[3]),
+            (e[0], e[3], e[1]),
+            (e[1], e[3], e[2]),
+        ]
+        for f in faces:
+            sf = tuple(sorted(f))
+            face_counts[sf] += 1
+            face_orientations[sf] = f
+
+    boundary_triangles = [
+        face_orientations[sf] for sf, count in face_counts.items() if count == 1
+    ]
+
+    # Deformed coordinates
+    def_nodes = nodes + displacements * float(deformation_scale)
+
+    fig = plt.figure(figsize=(13, 6), dpi=dpi, facecolor="#0f172a")
+    ax = fig.add_subplot(1, 2, 1, projection="3d", facecolor="#0f172a")
+
+    # Build 3D polygons
+    max_stress = max(0.01, float(result.max_von_mises_mpa))
+    norm = Normalize(vmin=0.0, vmax=max_stress)
+    cmap = plt.cm.turbo
+
+    tri_polys = []
+    face_colors = []
+    for tri in boundary_triangles:
+        tri_pts = def_nodes[list(tri)]
+        tri_polys.append(tri_pts)
+        mean_s = float(np.mean(nodal_stresses[list(tri)]))
+        face_colors.append(cmap(norm(mean_s)))
+
+    mesh_col = Poly3DCollection(tri_polys, facecolors=face_colors, edgecolors="#1e293b", linewidths=0.2, alpha=0.95)
+    ax.add_collection3d(mesh_col)
+
+    # Set axes limits
+    all_pts = def_nodes
+    min_b = np.min(all_pts, axis=0)
+    max_b = np.max(all_pts, axis=0)
+    mid = 0.5 * (min_b + max_b)
+    max_span = 0.5 * max(max_b - min_b)
+    ax.set_xlim(mid[0] - max_span, mid[0] + max_span)
+    ax.set_ylim(mid[1] - max_span, mid[1] + max_span)
+    ax.set_zlim(mid[2] - max_span, mid[2] + max_span)
+
+    ax.set_title(f"{result.study_name} - Von Mises Stress", color="#38bdf8", fontsize=11, fontweight="bold", pad=8)
+    ax.tick_params(colors="#94a3b8", labelsize=8)
+    ax.xaxis.pane.fill = False
+    ax.yaxis.pane.fill = False
+    ax.zaxis.pane.fill = False
+    ax.xaxis.pane.set_edgecolor("#334155")
+    ax.yaxis.pane.set_edgecolor("#334155")
+    ax.zaxis.pane.set_edgecolor("#334155")
+
+    # Colorbar
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cb = fig.colorbar(sm, ax=ax, shrink=0.6, pad=0.1)
+    cb.set_label("Von Mises Stress (MPa)", color="#f1f5f9", fontsize=9, fontweight="bold")
+    cb.ax.tick_params(colors="#f1f5f9", labelsize=8)
+
+    # Panel 2: Summary Card and Regional Breakdown
+    ax_info = fig.add_subplot(1, 2, 2, facecolor="#0f172a")
+    ax_info.axis("off")
+
+    status_color = "#34d399" if result.is_safe else "#f87171"
+    status_text = "PASSED (Safe)" if result.is_safe else "YIELD EXCEEDED"
+
+    lines_text = [
+        f"Study: {result.study_name}",
+        f"Part: {result.part_name}",
+        f"Mesh: {result.num_nodes:,} Nodes | {result.num_elements:,} Elements",
+        "-" * 42,
+        f"Peak Stress       : {result.max_von_mises_mpa:.2f} MPa",
+        f"Max Deflection    : {result.max_displacement_mm:.4f} mm",
+        f"Target Safety FoS : >= {result.required_safety_factor:.2f}",
+        f"Overall Safety FoS: {result.safety_factor:.2f}",
+        f"Status            : {status_text}",
+        "=" * 42,
+    ]
+
+    regional_res = getattr(result, "regional_results", None)
+    if regional_res:
+        lines_text.append("MATERIAL REGIONS BREAKDOWN:")
+        for r_id, reg in regional_res.items():
+            r_icon = "[PASS]" if reg.is_safe else "[CRIT]"
+            lines_text.append(f"• {reg.region_id} ({reg.material_name}):")
+            lines_text.append(f"   Peak: {reg.max_von_mises_mpa:.1f} MPa | Sy: {reg.yield_strength_mpa:.1f} MPa | FoS: {reg.safety_factor:.2f} {r_icon}")
+    else:
+        lines_text.append(f"Material: {result.material.name} (Sy={result.yield_strength_mpa:.1f} MPa)")
+
+    info_str = "\n".join(lines_text)
+    ax_info.text(
+        0.05, 0.95, info_str,
+        transform=ax_info.transAxes,
+        fontsize=9,
+        fontfamily="monospace",
+        color="#f8fafc",
+        verticalalignment="top",
+        bbox=dict(boxstyle="round,pad=0.8", facecolor="#1e293b", edgecolor="#334155", linewidth=1.5),
+    )
+
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=dpi, facecolor=fig.get_facecolor(), edgecolor="none")
+    plt.close(fig)
+
+    return out_path
+

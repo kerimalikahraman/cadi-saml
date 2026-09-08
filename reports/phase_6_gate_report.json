@@ -1,0 +1,37 @@
+{
+  "phase_number": 6,
+  "phase_name": "Şasi, Süspansiyon ve Batarya",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 5,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_systems_vehicle.py::test_chassis_frame_synthesis_and_mass_distribution": "PASSED",
+    "tests/test_systems_vehicle.py::test_suspension_hardpoints_and_kinematics": "PASSED",
+    "tests/test_systems_vehicle.py::test_battery_pack_enclosure_and_cooling_flow": "PASSED",
+    "tests/test_systems_vehicle.py::test_integrated_vehicle_platform_and_cad_compile": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_invalid_material_region_and_unassigned_elements": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:22:47.602894+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:22:47.602894+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_heterogeneous_fea.py::test_invalid_material_region_and_unassigned_elements",
+    "tests/test_systems_vehicle.py::test_battery_pack_enclosure_and_cooling_flow",
+    "tests/test_systems_vehicle.py::test_chassis_frame_synthesis_and_mass_distribution",
+    "tests/test_systems_vehicle.py::test_integrated_vehicle_platform_and_cad_compile",
+    "tests/test_systems_vehicle.py::test_suspension_hardpoints_and_kinematics"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

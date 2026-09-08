@@ -46,6 +46,8 @@ class ShapeCache:
 
     @classmethod
     def put(cls, key: str, shape: Any) -> None:
+        if not key:
+            raise ValueError("cache key must be non-empty")
         cls._cache[key] = shape
 
     @classmethod
@@ -68,6 +70,8 @@ class AABB:
     """3D Axis-Aligned Bounding Box for fast broad-phase collision detection."""
 
     def __init__(self, xmin: float, ymin: float, zmin: float, xmax: float, ymax: float, zmax: float, tag: str = ""):
+        if xmin > xmax or ymin > ymax or zmin > zmax:
+            raise ValueError("AABB minimum bounds must not exceed maximum bounds")
         self.xmin = xmin
         self.ymin = ymin
         self.zmin = zmin
@@ -97,6 +101,16 @@ class SpatialIndex:
     def __init__(self):
         self.boxes: List[AABB] = []
 
+    def remove(self, name: str) -> int:
+        """Remove all indexed boxes with *name* and return the count removed."""
+        before = len(self.boxes)
+        self.boxes = [box for box in self.boxes if box.tag != name]
+        return before - len(self.boxes)
+
+    def clear(self) -> None:
+        """Remove every indexed bounding box."""
+        self.boxes.clear()
+
     def insert_shape(self, name: str, shape: Any) -> None:
         if not HAS_OCP or shape is None or shape.IsNull():
             return
@@ -107,6 +121,8 @@ class SpatialIndex:
 
     def find_potential_clashes(self, tolerance_mm: float = 0.0) -> List[Tuple[str, str]]:
         """Finds all candidate overlapping pairs using O(N log N) sweep-and-prune."""
+        if tolerance_mm < 0:
+            raise ValueError("tolerance_mm must be non-negative")
         candidates = []
         n = len(self.boxes)
         # Sort along X axis

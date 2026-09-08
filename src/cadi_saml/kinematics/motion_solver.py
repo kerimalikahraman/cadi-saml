@@ -25,6 +25,7 @@ from .relations import (
     ScrewRelation,
     SliderCrankRelation,
     PlanetaryRelation,
+    SynchronizedGroupRelation,
 )
 
 
@@ -253,6 +254,40 @@ class KinematicMechanism:
                                 )
                                 visited.add(target_part)
                                 queue.append(target_part)
+
+                elif isinstance(rel, SynchronizedGroupRelation):
+                    if rel.driver_part == curr:
+                        sign = -1.0 if rel.reverse else 1.0
+                        for driven in rel.driven_parts:
+                            if driven not in visited:
+                                ratio = rel.get_ratio_for(driven)
+                                driven_joint = self.joints.get(driven)
+                                if isinstance(driven_joint, PrismaticJoint):
+                                    states[driven] = KinematicState(
+                                        part_name=driven,
+                                        angle_deg=0.0,
+                                        translation_mm=(curr_state.translation_mm if curr_state.translation_mm != 0.0 else curr_state.angle_deg) * sign * ratio,
+                                    )
+                                else:
+                                    states[driven] = KinematicState(
+                                        part_name=driven,
+                                        angle_deg=curr_state.angle_deg * sign * ratio,
+                                        translation_mm=0.0,
+                                    )
+                                visited.add(driven)
+                                queue.append(driven)
+                    elif curr in rel.driven_parts and rel.driver_part not in visited:
+                        sign = -1.0 if rel.reverse else 1.0
+                        ratio = rel.get_ratio_for(curr)
+                        eff_ratio = ratio if abs(ratio) > 1e-9 else 1.0
+                        driver_angle = curr_state.angle_deg / (sign * eff_ratio)
+                        states[rel.driver_part] = KinematicState(
+                            part_name=rel.driver_part,
+                            angle_deg=driver_angle,
+                            translation_mm=0.0,
+                        )
+                        visited.add(rel.driver_part)
+                        queue.append(rel.driver_part)
 
         # Compute 4x4 spatial transformation matrices for all solved parts
         for part_name, state in states.items():

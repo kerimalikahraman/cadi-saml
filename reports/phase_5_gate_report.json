@@ -1,0 +1,43 @@
+{
+  "phase_number": 5,
+  "phase_name": "STEP'ten Bağımsız Kod Üretimi",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 8,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_step_reconstruction_regression.py::test_regression_simple_box": "PASSED",
+    "tests/test_step_reconstruction_regression.py::test_regression_simple_cylinder": "PASSED",
+    "tests/test_step_reconstruction_regression.py::test_regression_stepped_shaft": "PASSED",
+    "tests/test_step_reconstruction_regression.py::test_regression_cylinder_with_holes": "PASSED",
+    "tests/test_step_reconstruction_regression.py::test_regression_stepped_shaft_with_holes": "PASSED",
+    "tests/test_step_reconstruction_regression.py::test_regression_flange_and_bolt_pattern": "PASSED",
+    "tests/test_step_reconstruction_regression.py::test_regression_zero_step_dependency_after_file_deletion": "PASSED",
+    "tests/test_step_reconstruction_regression.py::test_regression_oblique_axis_cylinder": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:22:35.196781+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:22:35.196781+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_step_reconstruction_regression.py::test_regression_cylinder_with_holes",
+    "tests/test_step_reconstruction_regression.py::test_regression_flange_and_bolt_pattern",
+    "tests/test_step_reconstruction_regression.py::test_regression_oblique_axis_cylinder",
+    "tests/test_step_reconstruction_regression.py::test_regression_simple_box",
+    "tests/test_step_reconstruction_regression.py::test_regression_simple_cylinder",
+    "tests/test_step_reconstruction_regression.py::test_regression_stepped_shaft",
+    "tests/test_step_reconstruction_regression.py::test_regression_stepped_shaft_with_holes",
+    "tests/test_step_reconstruction_regression.py::test_regression_zero_step_dependency_after_file_deletion"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

@@ -15,6 +15,7 @@ from .planetary_macros import add_planetary_stage, solve_planetary_teeth
 from .cam_macros import add_disk_cam, evaluate_motion_law
 from .hole_wizard import add_threaded_hole, lookup_metric_thread, METRIC_THREADS
 from .piping_macros import add_pipe_route, PIPE_SCHEDULES, analyze_pipe_route_flow
+from .iris_nozzle import build_variable_exhaust_nozzle, IrisNozzleMechanism, IrisNozzleMetrics
 
 __all__ = [
     "add_bolted_joint",
@@ -40,4 +41,7 @@ __all__ = [
     "add_pipe_route",
     "PIPE_SCHEDULES",
     "analyze_pipe_route_flow",
+    "build_variable_exhaust_nozzle",
+    "IrisNozzleMechanism",
+    "IrisNozzleMetrics",
 ]

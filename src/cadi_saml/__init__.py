@@ -53,7 +53,14 @@ from .analysis.surface_continuity import check_surface_continuity
 from .drafting.drawing import DrawingSheet
 from .drafting.projection import HLRViewExtractor, ProjectorView
 from .kinematics.joints import RevoluteJoint, PrismaticJoint
-from .kinematics.relations import GearRelation, RackPinionRelation, BeltRelation, ScrewRelation, PlanetaryRelation
+from .kinematics.relations import (
+    GearRelation,
+    RackPinionRelation,
+    BeltRelation,
+    ScrewRelation,
+    PlanetaryRelation,
+    SynchronizedGroupRelation,
+)
 from .kinematics.motion_solver import KinematicMechanism, KinematicState
 from .kinematics.debugger import ConstraintDebugger, ConstraintDebugReport, PartConstraintDiagnostic
 from .kinematics.swept_envelope import compute_swept_envelope, check_dynamic_clearance
@@ -81,6 +88,9 @@ from .macros import (
     add_pipe_route,
     PIPE_SCHEDULES,
     analyze_pipe_route_flow,
+    build_variable_exhaust_nozzle,
+    IrisNozzleMechanism,
+    IrisNozzleMetrics,
 )
 from .simulation import (
     Quantity,
@@ -104,6 +114,7 @@ from .simulation.coupling import (
     calc_pipe_bend_fluid_thrust,
     couple_flow_to_fea_bracket,
 )
+from .diagnostics import environment_report
 
 # Enterprise Parametric Kernel Extensions
 from .core.error_model import (
@@ -359,6 +370,7 @@ __all__ = [
     "add_pipe_route",
     "PIPE_SCHEDULES",
     "__version__",
+    "environment_report",
 ]
 
 __version__ = "0.6.0"

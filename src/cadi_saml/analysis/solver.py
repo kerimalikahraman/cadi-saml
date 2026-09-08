@@ -42,7 +42,8 @@ class LinearElasticitySolver:
         self,
         nodes: np.ndarray,      # (N, 3) float64
         elements: np.ndarray,   # (M, 4) int32
-        material: Material,
+        material: Optional[Material] = None,
+        element_materials: Optional[Sequence[Material]] = None,
     ):
         self.nodes = np.asarray(nodes, dtype=np.float64)
         self.elements = np.asarray(elements, dtype=np.int32)
@@ -54,39 +55,107 @@ class LinearElasticitySolver:
             raise ValueError("Invalid mesh coordinates or element indices")
         if len(np.unique(self.elements)) != len(self.nodes):
             raise ValueError("Mesh contains unused nodes")
-        if not (math.isfinite(material.youngs_modulus_mpa) and material.youngs_modulus_mpa > 0
-                and math.isfinite(material.poissons_ratio) and -1 < material.poissons_ratio < 0.5):
-            raise ValueError("Invalid isotropic material constants")
-        self.material = material
 
         self.num_nodes = len(self.nodes)
         self.num_elements = len(self.elements)
         self.num_dofs = self.num_nodes * 3
 
-        # Isotropic constitutive elasticity matrix C (6x6)
-        E = self.material.youngs_modulus_mpa
-        nu = self.material.poissons_ratio
-        factor = E / ((1.0 + nu) * (1.0 - 2.0 * nu))
+        if element_materials is not None:
+            if len(element_materials) != self.num_elements:
+                raise ValueError(f"element_materials count ({len(element_materials)}) must match elements ({self.num_elements})")
+            self.element_materials = list(element_materials)
+            self.material = self.element_materials[0] if material is None else material
+            self._elem_C = []
+            for mat in self.element_materials:
+                E = mat.youngs_modulus_mpa
+                nu = mat.poissons_ratio
+                if not (math.isfinite(E) and E > 0 and math.isfinite(nu) and -1 < nu < 0.5):
+                    raise ValueError(f"Invalid material constants for {mat.name}: E={E}, nu={nu}")
+                factor = E / ((1.0 + nu) * (1.0 - 2.0 * nu))
+                C_mat = factor * np.array([
+                    [1.0 - nu, nu, nu, 0.0, 0.0, 0.0],
+                    [nu, 1.0 - nu, nu, 0.0, 0.0, 0.0],
+                    [nu, nu, 1.0 - nu, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0],
+                ], dtype=np.float64)
+                self._elem_C.append(C_mat)
+            self.C = self._elem_C[0]
+        else:
+            if material is None:
+                raise ValueError("Must provide material or element_materials")
+            if not (math.isfinite(material.youngs_modulus_mpa) and material.youngs_modulus_mpa > 0
+                    and math.isfinite(material.poissons_ratio) and -1 < material.poissons_ratio < 0.5):
+                raise ValueError("Invalid isotropic material constants")
+            self.material = material
+            self.element_materials = None
+            self._elem_C = None
 
-        self.C = factor * np.array([
-            [1.0 - nu, nu, nu, 0.0, 0.0, 0.0],
-            [nu, 1.0 - nu, nu, 0.0, 0.0, 0.0],
-            [nu, nu, 1.0 - nu, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0],
-        ], dtype=np.float64)
+            E = self.material.youngs_modulus_mpa
+            nu = self.material.poissons_ratio
+            factor = E / ((1.0 + nu) * (1.0 - 2.0 * nu))
+            self.C = factor * np.array([
+                [1.0 - nu, nu, nu, 0.0, 0.0, 0.0],
+                [nu, 1.0 - nu, nu, 0.0, 0.0, 0.0],
+                [nu, nu, 1.0 - nu, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0, (1.0 - 2.0 * nu) / 2.0],
+            ], dtype=np.float64)
 
-    def assemble_stiffness_matrix(self) -> Tuple[sp.csc_matrix, List[np.ndarray], np.ndarray]:
+    def solve(
+        self,
+        fixed_node_indices: Optional[Set[int]] = None,
+        nodal_forces: Optional[Dict[int, Tuple[float, float, float]]] = None,
+        fixed_nodes: Optional[Set[int]] = None,
+    ) -> FEMSolution:
         """
-        Assembles global stiffness matrix K (csc_matrix) along with element B matrices and volumes.
+        Assembles stiffness matrix, applies boundary conditions, solves for displacements,
+        and computes resultant stresses.
         """
+        if fixed_node_indices is None:
+            fixed_node_indices = fixed_nodes
+        if fixed_node_indices is None:
+            fixed_node_indices = set()
+        if nodal_forces is None:
+            nodal_forces = {}
+
+        if not fixed_node_indices:
+            raise ValueError("FEA requires at least one fixed face/node to prevent rigid body motion.")
+
+        if any(i < 0 or i >= self.num_nodes for i in fixed_node_indices):
+            raise ValueError("Fixed node index out of range")
+        if any(i < 0 or i >= self.num_nodes or np.asarray(f).shape != (3,)
+               or not np.isfinite(f).all() for i, f in nodal_forces.items()):
+            raise ValueError("Invalid force node or vector")
+        # Check rigid body restraint separately on every connected mesh component.
+        parent = list(range(self.num_nodes))
+        def find(i):
+            while parent[i] != i:
+                parent[i] = parent[parent[i]]
+                i = parent[i]
+            return i
+        for tet in self.elements:
+            for i in tet[1:]:
+                parent[find(int(i))] = find(int(tet[0]))
+        groups = {}
+        for i in range(self.num_nodes):
+            groups.setdefault(find(i), []).append(i)
+        for ids in groups.values():
+            fixed = [i for i in ids if i in fixed_node_indices]
+            if len(fixed) < 3 or np.linalg.matrix_rank(self.nodes[fixed] - self.nodes[fixed].mean(axis=0)) < 2:
+                raise ValueError("Underconstrained mesh component: fix at least three non-collinear nodes")
+
+        # 1. Assemble Global Stiffness Matrix K
+        # Preallocate triplet arrays for COO sparse matrix (M elements * 12 * 12 = 144 * M entries)
         num_elem = self.num_elements
         entry_count = num_elem * 144
         rows = np.empty(entry_count, dtype=np.int32)
         cols = np.empty(entry_count, dtype=np.int32)
         vals = np.empty(entry_count, dtype=np.float64)
 
+        # Store B matrices and volumes for stress calculation
         elem_B_matrices = []
         elem_volumes = np.empty(num_elem, dtype=np.float64)
 
@@ -131,7 +200,8 @@ class LinearElasticitySolver:
             elem_B_matrices.append(B)
 
             # Element stiffness Ke = vol * (B.T @ C @ B)
-            Ke = vol * (B.T @ self.C @ B)
+            C_curr = self._elem_C[e_idx] if self._elem_C is not None else self.C
+            Ke = vol * (B.T @ C_curr @ B)
 
             # DOFs for this element: [n0_x, n0_y, n0_z, n1_x, ..., n3_z]
             dofs = np.empty(12, dtype=np.int32)
@@ -148,49 +218,6 @@ class LinearElasticitySolver:
             offset += 144
 
         K_global = sp.coo_matrix((vals, (rows, cols)), shape=(self.num_dofs, self.num_dofs)).tocsc()
-        return K_global, elem_B_matrices, elem_volumes
-
-    def _assemble_stiffness_matrix(self) -> sp.csc_matrix:
-        K_global, _, _ = self.assemble_stiffness_matrix()
-        return K_global
-
-    def solve(
-        self,
-        fixed_node_indices: Set[int],
-        nodal_forces: Dict[int, Tuple[float, float, float]],
-    ) -> FEMSolution:
-        """
-        Assembles stiffness matrix, applies boundary conditions, solves for displacements,
-        and computes resultant stresses.
-        """
-        if not fixed_node_indices:
-            raise ValueError("FEA requires at least one fixed face/node to prevent rigid body motion.")
-
-        if any(i < 0 or i >= self.num_nodes for i in fixed_node_indices):
-            raise ValueError("Fixed node index out of range")
-        if any(i < 0 or i >= self.num_nodes or np.asarray(f).shape != (3,)
-               or not np.isfinite(f).all() for i, f in nodal_forces.items()):
-            raise ValueError("Invalid force node or vector")
-        # Check rigid body restraint separately on every connected mesh component.
-        parent = list(range(self.num_nodes))
-        def find(i):
-            while parent[i] != i:
-                parent[i] = parent[parent[i]]
-                i = parent[i]
-            return i
-        for tet in self.elements:
-            for i in tet[1:]:
-                parent[find(int(i))] = find(int(tet[0]))
-        groups = {}
-        for i in range(self.num_nodes):
-            groups.setdefault(find(i), []).append(i)
-        for ids in groups.values():
-            fixed = [i for i in ids if i in fixed_node_indices]
-            if len(fixed) < 3 or np.linalg.matrix_rank(self.nodes[fixed] - self.nodes[fixed].mean(axis=0)) < 2:
-                raise ValueError("Underconstrained mesh component: fix at least three non-collinear nodes")
-
-        # 1. Assemble Global Stiffness Matrix K
-        K_global, elem_B_matrices, elem_volumes = self.assemble_stiffness_matrix()
 
         # 2. Assemble Force Vector F
         F_global = np.zeros(self.num_dofs, dtype=np.float64)
@@ -239,7 +266,6 @@ class LinearElasticitySolver:
         max_displacement = float(np.max(disp_magnitudes))
 
         # 4. Compute Element and Nodal Stresses
-        num_elem = self.num_elements
         elem_stresses = np.zeros((num_elem, 6), dtype=np.float64)
         elem_von_mises = np.zeros(num_elem, dtype=np.float64)
 
@@ -255,7 +281,8 @@ class LinearElasticitySolver:
             u_elem = displacements[elem_nodes].ravel()
 
             strain = B @ u_elem
-            stress = self.C @ strain
+            C_curr = self._elem_C[e_idx] if self._elem_C is not None else self.C
+            stress = C_curr @ strain
             elem_stresses[e_idx] = stress
 
             # Von-Mises: sqrt( 0.5 * ((s1-s2)^2 + (s2-s3)^2 + (s3-s1)^2 + 6*(t12^2 + t23^2 + t31^2)) )

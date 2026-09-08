@@ -1,0 +1,37 @@
+{
+  "phase_number": 2,
+  "phase_name": "Gerçek Solver ve Mesh Doğrulaması",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 5,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_fea_verification_and_convergence.py::test_analytical_uniaxial_tension_benchmark": "PASSED",
+    "tests/test_fea_verification_and_convergence.py::test_analytical_cantilever_benchmark": "PASSED",
+    "tests/test_fea_verification_and_convergence.py::test_mesh_convergence_study_converged_progression": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_calculix_runner_mocked_external_ccx": "PASSED",
+    "tests/test_fea_verification_and_convergence.py::test_mesh_convergence_study_unconverged_behavior": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:21:59.800104+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:21:59.800104+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_fea_verification_and_convergence.py::test_analytical_cantilever_benchmark",
+    "tests/test_fea_verification_and_convergence.py::test_analytical_uniaxial_tension_benchmark",
+    "tests/test_fea_verification_and_convergence.py::test_mesh_convergence_study_converged_progression",
+    "tests/test_fea_verification_and_convergence.py::test_mesh_convergence_study_unconverged_behavior",
+    "tests/test_heterogeneous_fea.py::test_calculix_runner_mocked_external_ccx"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

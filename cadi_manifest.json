@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "manifest_version": "1.0.0",
+  "contracts_version": "1.0.0",
+  "last_updated_utc": "2026-09-07T13:05:00Z",
+  "canonical_source": {
+    "name": "cadi-saml",
+    "git_repository": "kerimalikahraman/cadi-saml",
+    "local_path": "c:\\Users\\Kahraman\\Documents\\Cad_Ai\\library",
+    "package_name": "cadi_saml",
+    "editable_installed": true,
+    "role": "Single Source of Truth (Canonical Library)"
+  },
+  "downstream_mirrors": [
+    {
+      "name": "Project-CAD-",
+      "git_repository": "Omerersen/Project-CAD-",
+      "local_path": "c:\\Users\\Kahraman\\Documents\\Cad_Ai\\Project-CAD-\\cadi-library-next",
+      "role": "Downstream Consumer Workspace"
+    }
+  ],
+  "contracts": {
+    "units": {
+      "length": "mm",
+      "force": "N",
+      "stress": "MPa",
+      "mass": "kg",
+      "time": "s"
+    },
+    "coordinates": {
+      "system": "right_handed_cartesian",
+      "up_axis": "+Z",
+      "forward_axis": "+X"
+    },
+    "indexing": {
+      "default_base": "one",
+      "allowed_bases": ["one", "zero", "auto"],
+      "calculix_card_base": 1,
+      "numpy_memory_base": 0,
+      "silent_filtering": false,
+      "mixed_base_allowed": false
+    },
+    "tolerances": {
+      "linear_abs_tol_mm": 0.0001,
+      "angular_abs_tol_rad": 0.0001,
+      "convergence_disp_rel_pct": 3.0,
+      "convergence_stress_rel_pct": 5.0
+    },
+    "solvers": {
+      "allowed_backends": ["builtin", "calculix_ccx"],
+      "default_backend": "builtin"
+    },
+    "failure_modes": {
+      "fail_fast": true,
+      "silent_coercion": false,
+      "approximate_topology_substitution": false
+    }
+  },
+  "environment_dependency_markers": {
+    "requires_gmsh": {
+      "description": "Requires Gmsh Python bindings for automated B-Rep CAD meshing",
+      "behavior_when_missing": "SKIPPED with GmshNotAvailableError"
+    },
+    "requires_ccx": {
+      "description": "Requires external CalculiX ccx executable on PATH or CCX_BINARY",
+      "behavior_when_missing": "Explicit error if prefer_builtin_fallback=False, or falls back to builtin with audit note"
+    },
+    "synthetic_parser": {
+      "description": "Parser-only verification test using generated ASCII FRD/INP decks; does not substitute solver physical benchmarks",
+      "behavior": "Audited as parser contract test"
+    }
+  }
+}

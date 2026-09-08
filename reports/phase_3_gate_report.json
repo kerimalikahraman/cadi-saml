@@ -1,0 +1,39 @@
+{
+  "phase_number": 3,
+  "phase_name": "Çoklu Malzeme ve Arayüz",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 6,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_heterogeneous_fea.py::test_material_region_automatic_element_mapping": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_heterogeneous_steel_aluminum_compliance_difference": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_calculix_runner_end_to_end_bimetal": "PASSED",
+    "tests/test_fea_verification_and_convergence.py::test_bimetal_interface_stress_extraction": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_overlapping_material_regions_raise_error": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_fiber_direction_rejection_not_implemented": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:22:11.167736+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:22:11.167736+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_fea_verification_and_convergence.py::test_bimetal_interface_stress_extraction",
+    "tests/test_heterogeneous_fea.py::test_calculix_runner_end_to_end_bimetal",
+    "tests/test_heterogeneous_fea.py::test_fiber_direction_rejection_not_implemented",
+    "tests/test_heterogeneous_fea.py::test_heterogeneous_steel_aluminum_compliance_difference",
+    "tests/test_heterogeneous_fea.py::test_material_region_automatic_element_mapping",
+    "tests/test_heterogeneous_fea.py::test_overlapping_material_regions_raise_error"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

@@ -28,6 +28,8 @@ class AssemblyMateSolver:
         self.grounded_parts.add(part_name)
 
     def add_mate(self, mate: AssemblyMate) -> AssemblyMate:
+        if any(existing.name == mate.name for existing in self.mates):
+            raise ValueError(f"duplicate mate name: {mate.name}")
         self.parts.add(mate.part_a)
         self.parts.add(mate.part_b)
         self.mates.append(mate)

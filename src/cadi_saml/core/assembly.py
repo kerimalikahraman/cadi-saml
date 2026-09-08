@@ -20,6 +20,7 @@ from ..ir.nodes import (
     MateNode,
     MateType,
     MetadataNode,
+    MirrorNode,
     PartNode,
     PatternNode,
     PatternType,
@@ -551,6 +552,38 @@ class PartReference:
             else:
                 self._node.parameters[k] = v
         return self
+
+    @property
+    def source_part(self) -> Optional[str]:
+        """Returns name of master part if this is a linked instance, else None."""
+        return self._node.source_part
+
+    def create_instance(
+        self,
+        name: str,
+        offset: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        rotation: Optional[Dict[str, Any]] = None,
+    ) -> PartReference:
+        """Create a linked instance of this part where changes propagate from master."""
+        return self._assembly.create_instance(name=name, source_part=self.name, offset=offset, rotation=rotation)
+
+    def mirror(
+        self,
+        name: Optional[str] = None,
+        plane: str = "XZ",
+        point: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        normal: Optional[Tuple[float, float, float]] = None,
+        keep_original: bool = True,
+    ) -> PartReference:
+        """Create a mirrored copy of this part across a plane."""
+        return self._assembly.mirror_part(
+            source_part=self.name,
+            name=name,
+            plane=plane,
+            point=point,
+            normal=normal,
+            keep_original=keep_original,
+        )
 
 
 
@@ -1546,6 +1579,117 @@ class Assembly:
 
 
 
+    def create_instance(
+        self,
+        name: str,
+        source_part: str,
+        offset: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        rotation: Optional[Dict[str, Any]] = None,
+    ) -> PartReference:
+        """
+        Create a linked instance of source_part.
+        Geometry is shared with master: any edits, holes, fillets, or parameter changes
+        to source_part automatically propagate to this instance upon compilation.
+        """
+        if source_part not in self._parts:
+            raise KeyError(f"Source part '{source_part}' not found in assembly.")
+        if name in self._parts:
+            raise ValueError(f"A part with name '{name}' already exists in assembly.")
+
+        src_node = self._parts[source_part].node
+        part_node = PartNode(
+            name=name,
+            part_type="instance",
+            source_part=source_part,
+            instance_offset=tuple(float(c) for c in offset),
+            instance_rotation=rotation,
+            parameters={
+                "source_part": source_part,
+                "offset": tuple(float(c) for c in offset),
+                "rotation": rotation,
+            },
+            color=src_node.color,
+            material=src_node.material,
+        )
+        self._ir.add_part(part_node)
+        ref = PartReference(part_node, self)
+        self._parts[name] = ref
+        return ref
+
+    def mirror_part(
+        self,
+        source_part: Optional[str] = None,
+        name: Optional[str] = None,
+        plane: str = "XZ",
+        point: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        normal: Optional[Tuple[float, float, float]] = None,
+        keep_original: bool = True,
+        part_name: Optional[str] = None,
+        mirrored_name: Optional[str] = None,
+    ) -> PartReference:
+        """
+        Create a mirrored copy of source_part across a plane ('XY', 'XZ', 'YZ' or custom point+normal).
+        Generates watertight B-Rep with properly oriented faces and normals.
+        """
+        src = source_part or part_name
+        if src is None:
+            raise ValueError("source_part or part_name must be specified.")
+        if src not in self._parts:
+            raise KeyError(f"Source part '{src}' not found in assembly.")
+
+        dest_name = name or mirrored_name or f"{src}_mirror"
+        if dest_name in self._parts:
+            raise ValueError(f"A part with name '{dest_name}' already exists in assembly.")
+
+        plane_up = plane.upper()
+        if normal is None:
+            if plane_up == "XY":
+                plane_normal = (0.0, 0.0, 1.0)
+            elif plane_up == "XZ":
+                plane_normal = (0.0, 1.0, 0.0)
+            elif plane_up == "YZ":
+                plane_normal = (1.0, 0.0, 0.0)
+            else:
+                raise ValueError(f"Unknown mirror plane '{plane}'. Specify 'XY', 'XZ', 'YZ' or provide normal.")
+        else:
+            plane_normal = tuple(float(n) for n in normal)
+
+        mirror_node = MirrorNode(
+            name=dest_name,
+            source_part=src,
+            plane=plane_up,
+            point=tuple(float(p) for p in point),
+            normal=plane_normal,
+            keep_original=keep_original,
+        )
+        self._ir.add_mirror(mirror_node)
+
+        src_node = self._parts[src].node
+        part_node = PartNode(
+            name=dest_name,
+            part_type="mirror",
+            source_part=src,
+            parameters={
+                "source_part": src,
+                "plane": plane_up,
+                "point": mirror_node.point,
+                "normal": mirror_node.normal,
+                "keep_original": keep_original,
+            },
+            color=src_node.color,
+            material=src_node.material,
+        )
+        self._ir.add_part(part_node)
+        ref = PartReference(part_node, self)
+        self._parts[dest_name] = ref
+
+        if not keep_original and src in self._parts:
+            del self._parts[src]
+            if src in self._ir.parts:
+                del self._ir.parts[src]
+
+        return ref
+
     def pattern_circular(
         self,
         target_part: str,
@@ -1553,17 +1697,52 @@ class Assembly:
         center: Tuple[float, float, float] = (0.0, 0.0, 0.0),
         axis: Tuple[float, float, float] = (0.0, 0.0, 1.0),
         angle: float = 360.0,
-    ) -> None:
-        """Replicate target_part in a circular array (e.g., wheel spokes, bolt circles)."""
+        create_instances: bool = True,
+        prefix: Optional[str] = None,
+    ) -> List[PartReference]:
+        """
+        Replicate target_part in a circular array (e.g., jet engine nozzle petals, wheel spokes, bolt circles).
+        If create_instances=True, creates individual linked PartReference instances for each copy,
+        allowing individual joint attachment, kinematic coordination, and automatic propagation of edits.
+        """
+        if target_part not in self._parts:
+            raise KeyError(f"Target part '{target_part}' not found in assembly.")
+
+        cnt = int(count)
+        if cnt < 1:
+            raise ValueError(f"Pattern count must be >= 1, got {cnt}")
+
         pattern = PatternNode(
             target_part=target_part,
             pattern_type=PatternType.CIRCULAR,
-            count=int(count),
+            count=cnt,
             center=center,
             axis=axis,
             angle=float(angle),
+            create_instances=create_instances,
+            prefix=prefix,
         )
         self._ir.add_pattern(pattern)
+
+        instances = [self._parts[target_part]]
+        if create_instances and cnt > 1:
+            step_deg = float(angle) / float(cnt)
+            pref = prefix or target_part
+            for i in range(1, cnt):
+                inst_name = f"{pref}_{i+1}"
+                rot = {
+                    "axis": axis,
+                    "angle_deg": step_deg * i,
+                    "center": center,
+                }
+                inst_ref = self.create_instance(
+                    name=inst_name,
+                    source_part=target_part,
+                    rotation=rot,
+                )
+                instances.append(inst_ref)
+
+        return instances
 
     def pattern_linear(
         self,
@@ -2961,6 +3140,32 @@ class Assembly:
         self._get_mechanism().add_relation(rel)
         return rel
 
+    def add_synchronized_group(
+        self,
+        driver_part: str,
+        driven_parts: List[str],
+        ratio: float = 1.0,
+        reverse: bool = False,
+    ):
+        """
+        Synchronizes multiple driven parts to a single driver part with 1:1 or specified ratio.
+        Ideal for iris nozzle mechanisms, multi-petal flaps, multi-finger grippers, etc.
+        """
+        from ..kinematics import SynchronizedGroupRelation
+        if driver_part not in self._parts:
+            raise KeyError(f"Driver part '{driver_part}' not found in assembly.")
+        for dp in driven_parts:
+            if dp not in self._parts:
+                raise KeyError(f"Driven part '{dp}' not found in assembly.")
+        rel = SynchronizedGroupRelation(
+            driver_part=driver_part,
+            driven_parts=driven_parts,
+            ratios={dp: ratio for dp in driven_parts},
+            reverse=reverse,
+        )
+        self._get_mechanism().add_relation(rel)
+        return rel
+
     def validate_mechanism(self, driver_part):
         return self._get_mechanism().validate_mechanism(driver_part)
 
@@ -3329,13 +3534,6 @@ class Assembly:
         from .features import apply_rib
         apply_rib(self, name, thickness, height, length, origin, material)
         return self.get_part(name)
-
-    def mirror_part(self, part_name: str, plane: str = "XZ", mirrored_name: Optional[str] = None) -> PartReference:
-        """Mirrors a part across a symmetry datum plane."""
-        src_part = self.get_part(part_name)
-        new_name = mirrored_name or f"{part_name}_mirrored"
-        params = dict(src_part.parameters)
-        return self.add_standard_part(new_name, params.get("part_type", "box"), **params.get("args", {}))
 
     # =========================================================================
     # LLM INTROSPECTION & SELF-DESCRIBING API

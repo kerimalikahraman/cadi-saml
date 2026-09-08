@@ -3,7 +3,16 @@ import math
 from itertools import combinations
 import numpy as np
 from .joints import RevoluteJoint, PrismaticJoint
-from .relations import GearRelation, BeltRelation, RackPinionRelation, ScrewRelation, SliderCrankRelation, PlanetaryRelation
+from .relations import (
+    BeltRelation,
+    FourBarRelation,
+    GearRelation,
+    PlanetaryRelation,
+    RackPinionRelation,
+    ScrewRelation,
+    SliderCrankRelation,
+    SynchronizedGroupRelation,
+)
 
 
 def linear_relations(mechanism):
@@ -66,6 +75,16 @@ def linear_relations(mechanism):
                 planet_ratio = (zs / (zs + zr)) - (zs / zp) * (zr / (zs + zr))
                 for p_part in rel.planet_parts:
                     edges.append((rel.sun_part, p_part, planet_ratio))
+            continue
+        elif isinstance(rel, SynchronizedGroupRelation):
+            a = rel.driver_part
+            for b in rel.driven_parts:
+                ratio = rel.get_ratio_for(b) * (-1.0 if rel.reverse else 1.0)
+                if not math.isfinite(ratio) or abs(ratio) < 1e-12:
+                    errors.append(f'Invalid transmission factor: {a} -> {b}')
+                if a not in mechanism.joints or b not in mechanism.joints:
+                    errors.append(f'Missing or incompatible joints: {a} -> {b}')
+                edges.append((a, b, ratio))
             continue
         else:
             errors.append(f'Unsupported relation: {type(rel).__name__}')

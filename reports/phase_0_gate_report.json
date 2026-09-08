@@ -1,0 +1,35 @@
+{
+  "phase_number": 0,
+  "phase_name": "Kaynak ve Sözleşme Dondurma",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 4,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_phase_0_contracts_and_gates.py::test_manifest_schema_and_canonical_mapping": "PASSED",
+    "tests/test_phase_0_contracts_and_gates.py::test_contracts_immutability_and_schemas": "PASSED",
+    "tests/test_phase_0_contracts_and_gates.py::test_negative_invalid_index_base_rejection": "PASSED",
+    "tests/test_phase_0_contracts_and_gates.py::test_negative_mixed_base_rejection": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:21:37.357510+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:21:37.357510+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_phase_0_contracts_and_gates.py::test_contracts_immutability_and_schemas",
+    "tests/test_phase_0_contracts_and_gates.py::test_manifest_schema_and_canonical_mapping",
+    "tests/test_phase_0_contracts_and_gates.py::test_negative_invalid_index_base_rejection",
+    "tests/test_phase_0_contracts_and_gates.py::test_negative_mixed_base_rejection"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

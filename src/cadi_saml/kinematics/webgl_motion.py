@@ -53,7 +53,9 @@ def _extract_part_mesh(shape: TopoDS_Shape, deflection: float = 0.5) -> Tuple[Li
     offset = 0
 
     while exp.More():
-        face = TopoDS.Face(exp.Current())
+        # OCP exposes the downcast as Face_s; TopoDS.Face is unavailable in
+        # newer bindings and breaks motion export at runtime.
+        face = TopoDS.Face_s(exp.Current())
         loc = TopLoc_Location()
         triangulation = BRep_Tool.Triangulation_s(face, loc)
         if triangulation:

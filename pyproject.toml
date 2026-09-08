@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cadi_saml"
+name = "cadi-saml"
 version = "0.6.0"
 description = "CADi SAML: Deterministic, Zero-Coordinate, LLM-Native CAD & Kinematics Engine for Python built on OpenCASCADE"
 authors = [
@@ -60,3 +60,8 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+markers = [
+    "requires_gmsh: Tests requiring Gmsh Python bindings and B-Rep meshing",
+    "requires_ccx: Tests requiring CalculiX ccx binary executable in environment or PATH",
+    "synthetic_parser: Tests verifying FRD/INP parser formats with synthetic data",
+]

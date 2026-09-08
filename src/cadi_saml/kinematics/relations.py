@@ -7,7 +7,7 @@ Mechanical mate and kinematic transmission relations between assembly parts.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 
@@ -22,6 +22,7 @@ class RelationType(str, Enum):
     SLIDER_CRANK = "slider_crank"
     FOUR_BAR = "four_bar"
     PLANETARY = "planetary"
+    SYNCHRONIZED_GROUP = "synchronized_group"
 
 
 @dataclass
@@ -268,3 +269,20 @@ class PlanetaryRelation:
             res[p] = omega_planet
 
         return res
+
+
+@dataclass
+class SynchronizedGroupRelation:
+    """
+    Couples a driver part (e.g., control actuator ring, command angle, or master flap)
+    to multiple driven parts (e.g., iris nozzle petals, turbine stator vanes, gripper fingers).
+    Each driven part can have an individual transmission ratio or direction.
+    """
+    driver_part: str
+    driven_parts: List[str]
+    ratios: Dict[str, float] = field(default_factory=dict)
+    reverse: bool = False
+    relation_type: RelationType = RelationType.SYNCHRONIZED_GROUP
+
+    def get_ratio_for(self, part_name: str) -> float:
+        return self.ratios.get(part_name, 1.0)

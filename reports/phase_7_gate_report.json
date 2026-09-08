@@ -1,0 +1,33 @@
+{
+  "phase_number": 7,
+  "phase_name": "Bağlantı ve İleri Analiz",
+  "verdict": "GATE_PASSED",
+  "is_approved": true,
+  "contracts_schema_version": "1.0.0",
+  "manifest_verified": true,
+  "passed_count": 3,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "blocked_count": 0,
+  "test_outcomes": {
+    "tests/test_heterogeneous_fea.py::test_boundary_condition_explicit_dofs_and_values": "PASSED",
+    "tests/test_fea_verification_and_convergence.py::test_bimetal_interface_stress_extraction": "PASSED",
+    "tests/test_heterogeneous_fea.py::test_fiber_direction_rejection_not_implemented": "PASSED"
+  },
+  "negative_scenarios_verified": true,
+  "timestamp_utc": "2026-09-07T16:22:55.364315+00:00",
+  "environment": {
+    "python_version": "3.14.6",
+    "pytest_version": "9.1.1",
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "timestamp_utc": "2026-09-07T16:22:55.364315+00:00"
+  },
+  "executed_node_ids": [
+    "tests/test_fea_verification_and_convergence.py::test_bimetal_interface_stress_extraction",
+    "tests/test_heterogeneous_fea.py::test_boundary_condition_explicit_dofs_and_values",
+    "tests/test_heterogeneous_fea.py::test_fiber_direction_rejection_not_implemented"
+  ],
+  "missing_node_ids": [],
+  "summary_markdown": ""
+}

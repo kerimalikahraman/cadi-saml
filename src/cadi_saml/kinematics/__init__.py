@@ -16,6 +16,7 @@ from .relations import (
     SliderCrankRelation,
     FourBarRelation,
     PlanetaryRelation,
+    SynchronizedGroupRelation,
 )
 from .motion_solver import KinematicMechanism, KinematicState
 from .webgl_motion import export_motion_html
@@ -34,6 +35,7 @@ __all__ = [
     "SliderCrankRelation",
     "FourBarRelation",
     "PlanetaryRelation",
+    "SynchronizedGroupRelation",
     "KinematicMechanism",
     "KinematicState",
     "export_motion_html",
